@@ -55,48 +55,57 @@ export function Navbar() {
               isMenuOpen ? "block" : "hidden"
             } sm:block mt-4 sm:mt-0`}
           >
-            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-8">
+            <ul className="flex flex-col sm:flex-row sm:items-center sm:space-x-8">
               {["Features", "Pricing", "Docs"].map((item) => (
-                <Link
-                  key={item}
-                  href={`/${item.toLowerCase()}`}
-                  className="text-gray-300 hover:text-white transition-colors py-2 sm:py-0 relative group"
-                >
-                  {item}
-                  <span className="absolute left-0 right-0 bottom-0 h-0.5 bg-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
-                </Link>
+                <li className="py-2 sm:py-0" key={item}>
+                  <Link
+                    href={`/${item.toLowerCase()}`}
+                    className="text-gray-300 hover:text-white transition-colors relative sm:pb-1 group"
+                  >
+                    {item}
+                    <span className="absolute left-0 right-0 bottom-0 h-0.5 bg-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                  </Link>
+                </li>
               ))}
               {userId && (
-                <Link
-                  href="/generate"
-                  className="text-gray-300 hover:text-white transition-colors py-2 sm:py-0 relative group"
-                >
-                  Dashboard
-                  <span className="absolute left-0 right-0 bottom-0 h-0.5 bg-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
-                </Link>
+                <li className="py-2 sm:py-0">
+                  <Link
+                    href="/generate"
+                    className="text-gray-300 hover:text-white transition-colors relative group"
+                  >
+                    Dashboard
+                    <span className="absolute left-0 right-0 bottom-0 h-0.5 bg-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                  </Link>
+                </li>
               )}
-              <SignedOut>
-                <SignInButton mode="modal">
-                  <button className="text-gray-300 hover:text-white transition-colors mt-2 sm:mt-0">
-                    Sign In
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full transition-colors mt-2 sm:mt-0">
-                    Sign Up
-                  </button>
-                </SignUpButton>
-              </SignedOut>
-              <SignedIn>
-                <UserButton
-                  appearance={{
-                    elements: {
-                      avatarBox: "w-10 h-10",
-                    },
-                  }}
-                />
-              </SignedIn>
-            </div>
+                <SignedOut>
+                  <li className="mt-2 sm:mt-0">
+                    <SignInButton mode="modal">
+                      <button className="text-gray-300 hover:text-white w-full transition-colors cursor-pointer">
+                        Sign In
+                      </button>
+                    </SignInButton>
+                  </li>
+                  <li className="mt-2 sm:mt-0">
+                    <SignUpButton mode="modal">
+                      <button className="bg-blue-600 hover:bg-blue-700 text-white w-full px-4 py-2 rounded-full transition-colors cursor-pointer">
+                        Sign Up
+                      </button>
+                    </SignUpButton>
+                  </li>
+                </SignedOut>
+                <SignedIn>
+                  <li className="mt-2 sm:mt-0">
+                    <UserButton
+                      appearance={{
+                        elements: {
+                          avatarBox: "w-10 h-10",
+                        },
+                      }}
+                    />
+                  </li>
+                </SignedIn>
+            </ul>
           </div>
         </div>
       </nav>
