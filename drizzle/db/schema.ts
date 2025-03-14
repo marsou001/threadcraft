@@ -10,6 +10,7 @@ import {
 
 export const Users = pgTable("users", {
   id: serial("id").primaryKey(),
+  clerkId: text("clerkId").unique(),
   stripeCustomerId: text("stripe_customer_id").unique(),
   email: text("email").notNull().unique(),
   name: text("name"),
