@@ -114,10 +114,15 @@ export default function Home() {
             Ready to revolutionize your social media strategy?
           </h2>
           <SignedOut>
-            <SignUpButton mode="modal">
-              <button className="text-white bg-blue-600 hover:bg-blue-700 text-lg flex items-center mx-auto px-8 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
-                Get Started Free <ArrowRightIcon className="ml-2 h-5 w-5" />
-              </button>
+            <SignUpButton>
+              <div>
+                <button className="text-white bg-blue-600 hover:bg-blue-700 text-lg mx-auto px-8 py-2 rounded-full cursor-pointer transition duration-300 ease-in-out transform hover:scale-105">
+                  <Link href="/sign-up" className="flex items-center">
+                    Get Started Free <ArrowRightIcon className="ml-2 h-5 w-5" />
+                  </Link>
+                </button>
+                <p className="mt-4 text-gray-400">No credit card required</p>
+              </div>
             </SignUpButton>
           </SignedOut>
 
@@ -130,7 +135,6 @@ export default function Home() {
               </Link>
             </button>
           </SignedIn>
-          <p className="mt-4 text-gray-400">No credit card required</p>
         </div>
       </div>
     </main>
