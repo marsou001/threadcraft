@@ -128,9 +128,9 @@ export default function Home() {
 
           <SignedIn>
             <button
-              className="text-white bg-blue-600 hover:bg-blue-700 text-lg flex items-center mx-auto px-8 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105"
+              className="text-white bg-blue-600 hover:bg-blue-700 text-lg mx-auto px-8 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105"
             >
-              <Link href="/generate">
+              <Link href="/generate" className="flex items-center">
                 Generate Content Now <ArrowRightIcon className="ml-2 h-5 w-5" />
               </Link>
             </button>
