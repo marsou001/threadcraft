@@ -1,5 +1,5 @@
 import { db } from ".";
-import { Users } from "./schema";
+import { Subscriptions, Users } from "./schema";
 import { eq } from "drizzle-orm";
 
 export async function createUser(clerkId: string, email: string, name: string) {
