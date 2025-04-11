@@ -3,7 +3,6 @@ import { Plan } from "@/types";
 export const features = [
   {
     title: "Twitter Threads",
-    // icon: <SiX className="w-10 h-10 mb-4 text-black" />,
     icon: "/icons/x.png",
     iconAltTitle: "X logo",
     description: "Generate compelling Twitter threads that engage your audience and boost your reach.",
