@@ -72,7 +72,7 @@ export async function POST(req: Request) {
         console.error("Error creating/updating user:", error);
         return new Response("Error processing user data", { status: 500 });
       }
+    default:
+      return new Response('Webhook received', { status: 200 });
   }
-
-  return new Response('Webhook received', { status: 200 })
 }

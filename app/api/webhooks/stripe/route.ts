@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       case "payment_intent.payment_failed":
         const paymentIntentPaymentFailed = event.data.object;
         console.log("Event:", "payment_intent.payment_failed");
+      default:
+        return new Response('Webhook received', { status: 200 });
   }
-
-  return new Response('Webhook received', { status: 200 });
 }
