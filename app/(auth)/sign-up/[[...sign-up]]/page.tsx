@@ -39,6 +39,9 @@ function SignUpPage() {
             dividerText: {
               color: "rgb(197, 197, 197)",
             },
+            otpCodeFieldInput: {
+              backgroundColor: "white"
+            },
             formFieldInput: {
               padding: "10px",
             },
