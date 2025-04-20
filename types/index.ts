@@ -1,12 +1,23 @@
 export type PricingPlan = "Basic" | "Pro" | "Enterprise";
 
-export type SocialMedia = "x" | "instagram" | "linkedin";
+export type SocialMedia = "X" | "Instagram" | "LinkedIn";
+
+export type Tone = "Casual" | "Conversational" | "Humorous" | "Professional" | "Empathetic" | "Enthusiastic" | "Authoritative" | "Serious" | "Neutral" | "Joyful" | "Friendly" | "Encouraging";
 
 export type Plan = {
   name: PricingPlan;
   price: number | "Custom";
   priceId: string | null;
   features: string[];
+}
+
+export type User = {
+  id: number;
+  clerkId: string;
+  email: string;
+  name: string;
+  points: number;
+  createdAt: Date;
 }
 
 export type History = HistoryItem[];
@@ -20,12 +31,12 @@ export type HistoryItem = {
 }
 
 export type ContentType = {
-  socialMedia: "x";
+  socialMedia: "X";
   label: "Twitter Thread";
 } | {
-  socialMedia: "instagram";
+  socialMedia: "Instagram";
   label: "Instagram Caption";
 } | {
-  socialMedia: "linkedin";
+  socialMedia: "LinkedIn";
   label: "LinkedIn Post";
 }

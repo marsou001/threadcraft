@@ -1,4 +1,4 @@
-import { Plan } from "@/types";
+import { Plan, Tone } from "@/types";
 
 export const features = [
   {
@@ -64,3 +64,5 @@ export const pricingPlans: Plan[] = [
     ],
   },
 ];
+
+export const tones: Tone[] = ["Casual", "Conversational", "Humorous", "Professional", "Empathetic", "Enthusiastic", "Authoritative", "Serious", "Neutral", "Joyful", "Friendly", "Encouraging"];

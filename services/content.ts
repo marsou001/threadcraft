@@ -1,9 +1,9 @@
-import { SocialMedia } from "@/types";
+import { SocialMedia, Tone } from "@/types";
 
-export async function generateContent(userId: string, socialMedia: SocialMedia, prompt: string): Promise<string> {
+export async function generateContent(userId: string, socialMedia: SocialMedia, tone: Tone, prompt: string): Promise<string> {
   const response = await fetch("/api/content", {
     method: "POST",
-    body: JSON.stringify({ userId, socialMedia, prompt }),
+    body: JSON.stringify({ userId, socialMedia, prompt, tone }),
     headers: { "Content-Type": "application/json" },
   })
 

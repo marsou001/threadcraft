@@ -16,7 +16,8 @@ import {
   Zap,
 } from "lucide-react";
 import Image from "next/image";
-import { ContentType, History, HistoryItem, SocialMedia } from "@/types";
+import { ContentType, History, HistoryItem, SocialMedia, Tone } from "@/types";
+import { tones } from "@/data";
 import { getUserPoints, updateUserPoints } from "@/services/users";
 import { cn } from "@/lib/utils";
 import TwitterMock from "@/components/social-mocks/TwitterMock";
@@ -50,6 +51,7 @@ export default function GenerateContent() {
   const [selectedHistoryItem, setSelectedHistoryItem] = useState<HistoryItem | null>(null);
   const [userPoints, setUserPoints] = useState<number | null>(null);
   const [socialMedia, setSocialMedia] = useState<SocialMedia>("X");
+  const [tone, setTone] = useState<Tone>("Casual");
   const [prompt, setPrompt] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -112,7 +114,7 @@ export default function GenerateContent() {
     // Generate content
     try {
       // Generating content logic
-      const content = await generateContent(userId!, socialMedia, prompt);
+      const content = await generateContent(userId!, socialMedia, tone, prompt);
       if (socialMedia === "LinkedIn") {
         setGeneratedContent([content]);
       }
@@ -243,6 +245,26 @@ export default function GenerateContent() {
                           <Image src={`/icons/${type.socialMedia}.png`} alt={type.socialMedia} width={24} height={24} className="mr-2 h-4 w-4" />
                           {type.label}
                         </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <label className="text-gray-300 text-sm font-medium block mb-2">
+                  Tone
+                </label>
+                <Select
+                  onValueChange={(e) => setTone(e as Tone)}
+                >
+                  <SelectTrigger className="bg-gray-700 w-full border-none rounded-xl cursor-pointer">
+                    <SelectValue placeholder="Select tone" />
+                  </SelectTrigger>
+                  <SelectContent className="text-white bg-gray-800">
+                    {tones.map((tone) => (
+                      <SelectItem key={tone} value={tone} className="cursor-pointer">
+                        <div className="flex items-center">{ tone }</div>
                       </SelectItem>
                     ))}
                   </SelectContent>
