@@ -40,3 +40,41 @@ export type ContentType = {
   socialMedia: "LinkedIn";
   label: "LinkedIn Post";
 }
+
+export type CommonSettings = {
+  socialMedia: SocialMedia;
+  prompt: string;
+  tone: Tone;
+}
+
+export type XSettings = {
+  socialMedia: "X";
+  numberOfTweets: number;
+};
+
+export type InstagramSettings = {
+  socialMedia: "Instagram";
+  imagePrompt?: string;
+};
+
+export type LinkedInSettings = {
+  socialMedia: "LinkedIn";
+};
+
+export type CustomSettings = XSettings | LinkedInSettings | InstagramSettings;
+
+export enum SettingsActionType {
+  UPDATE_SOCIAL_MEDIA = "UPDATE_SOCIAL_MEDIA",
+  UPDATE_TONE = "UPDATE_TONE",
+  UPDATE_PROMPT = "UPDATE_PROMPT",
+}
+export type SettingsAction = {
+  type: SettingsActionType.UPDATE_SOCIAL_MEDIA;
+  payload: SocialMedia;
+} | {
+  type: SettingsActionType.UPDATE_TONE;
+  payload: Tone;
+} | {
+  type: SettingsActionType.UPDATE_PROMPT;
+  payload: string;
+};

@@ -5,15 +5,17 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { userId, socialMedia, prompt, tone } = body;
+  const { userId, settings, customSettings } = body;
 
   if (userId === null) {
     return new Response("No user id param was found in the request", { status: 400 });
   }
 
+  const { socialMedia, prompt, tone } = settings;
+
   let promptText = `Generate ${socialMedia} content in an ${tone} tone, with this instruction(s): ${prompt}.`;
 
-  if (socialMedia === "X") promptText += " Provide a thread of 5 tweets, each under 280 characters."
+  if (customSettings.socialMedia === "X") promptText += ` Provide a thread of ${customSettings.numberOfTweets} tweets, each under 280 characters.`
 
   const response = await openai.responses.create({
     model: "gpt-3.5-turbo",

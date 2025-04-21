@@ -1,6 +1,7 @@
 import { db } from ".";
-import { Subscriptions, Users } from "./schema";
+import { GeneratedContent, Users } from "./schema";
 import { eq } from "drizzle-orm";
+import { HistoryItem as Content } from "@/types";
 
 export async function createUser(clerkId: string, email: string, name: string) {
   console.log("Creating user ", clerkId, email, name);
@@ -13,8 +14,20 @@ export async function createUser(clerkId: string, email: string, name: string) {
   return newUser;
 }
 
-export async function getUser(userId: string) {
-  console.log("Fetching user ", userId);
+export async function getUser(id: number) {
+  console.log("Fetching user ", id);
+
+  const [user] = await db
+    .select()
+    .from(Users)
+    .where(eq(Users.id, id))
+    .limit(1)
+    .execute()
+  return user;
+}
+
+export async function getUserByClerkId(userId: string) {
+  console.log("Fetching user by Clerk id ", userId);
 
   const [user] = await db
     .select()
@@ -57,4 +70,16 @@ export async function updateUserPoints(userId: string, newPoints: number) {
     .returning()
     .execute()
   return user.points;
-} 
+}
+
+export async function saveGeneratedContent(userId: string, generatedContent: Omit<Content, "id" | "createdAt">) {
+  console.log("Saving generated content for user ", userId);
+
+  const [content] = await db
+    .insert(GeneratedContent)
+    .values({ userId, content: generatedContent.content, prompt: generatedContent.prompt, socialMedia: generatedContent.socialMedia })
+    .returning()
+    .execute();
+  
+  return content;
+}

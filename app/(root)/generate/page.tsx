@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, ChangeEvent, useRef, FormEvent } from "react";
+import { useState, useEffect, ChangeEvent, useRef, FormEvent, useReducer } from "react";
 import Link from "next/link";
 import {
   Select,
@@ -16,7 +16,7 @@ import {
   Zap,
 } from "lucide-react";
 import Image from "next/image";
-import { ContentType, History, HistoryItem, SocialMedia, Tone } from "@/types";
+import { CommonSettings, CustomSettings, ContentType, History, HistoryItem, SettingsAction, SettingsActionType, SocialMedia, Tone, XSettings } from "@/types";
 import { tones } from "@/data";
 import { getUserPoints, updateUserPoints } from "@/services/users";
 import { cn } from "@/lib/utils";
@@ -46,13 +46,30 @@ const contentTypes: ContentType[] = [
 const MAX_TWEET_LENGTH = 280;
 const POINTS_PER_GENERATION = 5;
 
+const initialSettings: CommonSettings = {
+  socialMedia: "LinkedIn",
+  tone: "Casual",
+  prompt: "",
+}
+
+function settingsReducer(state: CommonSettings, action: SettingsAction): CommonSettings {
+  switch(action.type) {
+    case SettingsActionType.UPDATE_SOCIAL_MEDIA:
+      return { ...state, socialMedia: action.payload };
+    case SettingsActionType.UPDATE_TONE:
+      return { ...state, tone: action.payload };
+    case SettingsActionType.UPDATE_PROMPT:
+      return { ...state, prompt: action.payload };
+    default:
+      return state;
+  }
+}
+
 export default function GenerateContent() {
+  const [settings, dispatch] = useReducer(settingsReducer, initialSettings);
   const [history, setHistory] = useState<History>([]);
   const [selectedHistoryItem, setSelectedHistoryItem] = useState<HistoryItem | null>(null);
   const [userPoints, setUserPoints] = useState<number | null>(null);
-  const [socialMedia, setSocialMedia] = useState<SocialMedia>("X");
-  const [tone, setTone] = useState<Tone>("Casual");
-  const [prompt, setPrompt] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<string[]>([]);
@@ -61,7 +78,7 @@ export default function GenerateContent() {
   const { isLoaded, isSignedIn, userId } = useAuth();
   const router = useRouter();
 
-  const isSubmitButtonDisabled = isGenerating || prompt === "" || userPoints === null || userPoints < POINTS_PER_GENERATION;
+  const isSubmitButtonDisabled = isGenerating || settings.prompt === "" || userPoints === null || userPoints < POINTS_PER_GENERATION;
 
   async function fetchUserHistory() {
     try {
@@ -77,8 +94,8 @@ export default function GenerateContent() {
 
   function handleHistoryItemClick(item: HistoryItem) {
     setSelectedHistoryItem(item);
-    setSocialMedia(item.socialMedia);
-    setPrompt(item.prompt);
+    dispatch({ type: SettingsActionType.UPDATE_SOCIAL_MEDIA, payload: item.socialMedia });
+    dispatch({ type: SettingsActionType.UPDATE_PROMPT, payload: item.prompt });
     setGeneratedContent(
       item.socialMedia === "X"
         ? item.content.split("\n\n")
@@ -102,24 +119,29 @@ export default function GenerateContent() {
   }
 
   async function handleGenerateContent(e: FormEvent) {
+    e.preventDefault();
+    
     if (userPoints === null || userPoints === undefined || userPoints < 5) {
       console.log("Not enough points");
       // Maybe redirect to pricing page?
       return;
     }
 
-    e.preventDefault();
     setIsGenerating(true);
+    const customSettings = { socialMedia: settings.socialMedia } as CustomSettings;
+
+    if (customSettings.socialMedia === "X") {
+      customSettings.numberOfTweets = 5
+    }
 
     // Generate content
     try {
-      // Generating content logic
-      const content = await generateContent(userId!, socialMedia, tone, prompt);
-      if (socialMedia === "LinkedIn") {
+      const content = await generateContent(userId!, settings, customSettings);
+      if (settings.socialMedia === "LinkedIn") {
         setGeneratedContent([content]);
       }
 
-      if (socialMedia === "X") {
+      if (settings.socialMedia === "X") {
         const threads = content.split(/\n\n/);
         debugger
         setGeneratedContent(threads);
@@ -149,7 +171,7 @@ export default function GenerateContent() {
   function renderContentMock() {
     if (generatedContent.length === 0) return null;
 
-    switch(socialMedia) {
+    switch(settings.socialMedia) {
       case "X":
         return <TwitterMock content={generatedContent} />;
       case "Instagram":
@@ -233,7 +255,7 @@ export default function GenerateContent() {
                   Content Type
                 </label>
                 <Select
-                  onValueChange={(e) => setSocialMedia(e as SocialMedia)}
+                  onValueChange={(e) => dispatch({ type: SettingsActionType.UPDATE_SOCIAL_MEDIA, payload: e as SocialMedia })}
                 >
                   <SelectTrigger className="bg-gray-700 w-full border-none rounded-xl cursor-pointer">
                     <SelectValue placeholder="Select content type" />
@@ -256,7 +278,7 @@ export default function GenerateContent() {
                   Tone
                 </label>
                 <Select
-                  onValueChange={(e) => setTone(e as Tone)}
+                  onValueChange={(e) => dispatch({ type: SettingsActionType.UPDATE_TONE, payload: e as Tone })}
                 >
                   <SelectTrigger className="bg-gray-700 w-full border-none rounded-xl cursor-pointer">
                     <SelectValue placeholder="Select tone" />
@@ -281,14 +303,14 @@ export default function GenerateContent() {
                 <textarea
                   id="prompt"
                   placeholder="Enter your prompt here..."
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
+                  value={settings.prompt}
+                  onChange={(e) => dispatch({ type: SettingsActionType.UPDATE_PROMPT, payload: e.target.value })}
                   rows={4}
                   className="bg-gray-700 w-full p-3 border-none rounded-xl resize-none"
                 />
               </div>
 
-              {socialMedia === "Instagram" && (
+              {settings.socialMedia === "Instagram" && (
                 <div>
                   <label id="image-upload" className="block text-sm font-medium mb-2 text-gray-300">
                     Upload Image

@@ -12,6 +12,7 @@ export default function LinkedInMock({ content }: { content: string }) {
       </div>
       <p className="mb-4">{content}</p>
       <div className="text-gray-500 flex justify-between">
+        {/* Use an screenshot image from LinkedIn */}
         <ThumbsUp size={18} />
         <MessageSquare size={18} />
         <Repeat size={18} />

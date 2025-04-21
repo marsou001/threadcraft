@@ -1,4 +1,18 @@
-import { SocialMedia } from "@/types";
+import { User } from "@/types";
+
+export async function getUserByClerkId(clerkUserId: string): Promise<User> {
+  const response = await fetch("/api/users?clerk_user=" + clerkUserId);
+  
+  if (!response.ok) {
+    const error = await response.text();
+    console.log(error)
+  
+    throw new Error(error);
+  }
+  
+  const user = await response.json();
+  return user;
+}
 
 export async function getUserPoints(userId: string): Promise<number> {
   const response = await fetch("/api/users/points?user=" + userId);
@@ -27,22 +41,4 @@ export async function updateUserPoints(userId: string, newPoints: number) {
 
     throw new Error(error);
   }
-}
-
-export async function generateContent(socialMedia: SocialMedia, prompt: string): Promise<string> {
-  const response = await fetch("/api/users/generate-content", {
-    method: "POST",
-    body: JSON.stringify({ socialMedia, prompt }),
-    headers: { "Content-Type": "application/json" },
-  })
-
-  if (!response.ok) {
-    const error = await response.text();
-    console.log(error)
-
-    throw new Error(error);
-  }
-
-  const data = await response.json();
-  return data.generatedContent;
 }
