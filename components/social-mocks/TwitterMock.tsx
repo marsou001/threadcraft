@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { Heart, MessageCircle, Repeat, Share } from "lucide-react";
 
 export default function ({ content }: { content: string[] }) {
@@ -11,7 +12,7 @@ export default function ({ content }: { content: string[] }) {
         </div>
       </div>
       {content.map((tweet, index) => (
-        <div key={index} className="mb-4 pb-4 border-b border-gray-200">
+        <div key={index} className={cn("pt-4", { "mt-4 border-t border-gray-200": index !== 0 })}>
           <p>{tweet}</p>
           <div className="text-gray-500 flex justify-between mt-3">
             <MessageCircle size={18} />
