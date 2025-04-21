@@ -26,6 +26,7 @@ import LinkedInMock from "@/components/social-mocks/LinkedInMock";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { generateContent } from "@/services/content";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const mockHistory: History = [
   {
@@ -71,6 +72,7 @@ export default function GenerateContent() {
   const [selectedHistoryItem, setSelectedHistoryItem] = useState<HistoryItem | null>(null);
   const [userPoints, setUserPoints] = useState<number | null>(null);
   const [numberOfTweets, setNumberOfTweets] = useState<number>(5);
+  const [shouldAddAIDescription, setShouldAddAIDescription] = useState(false);
   const [image, setImage] = useState<File | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<string[]>([]);
@@ -113,6 +115,10 @@ export default function GenerateContent() {
         console.log("error: ", error.message);
       }
     }
+  }
+
+  function toggleShouldAddAIDescription() {
+    setShouldAddAIDescription(prev => !prev);
   }
 
   function handleImageUpload(e: ChangeEvent<HTMLInputElement>) {
@@ -334,6 +340,18 @@ export default function GenerateContent() {
               </div>
 
               {settings.socialMedia === "Instagram" && (
+                <div className="flex items-center">
+                  <Checkbox
+                    id="describe-image"
+                    checked={shouldAddAIDescription}
+                    onCheckedChange={toggleShouldAddAIDescription}
+                    className="mr-2 cursor-pointer"
+                  />
+                  <label htmlFor="describe-image" className="text-gray-300 text-md font-medium cursor-pointer">Add AI description to your image</label>
+                </div>
+              )}
+
+              {(settings.socialMedia === "Instagram" && shouldAddAIDescription) && (
                 <div>
                   <label id="image-upload" className="block text-sm font-medium mb-2 text-gray-300">
                     Upload Image
@@ -394,9 +412,9 @@ export default function GenerateContent() {
                     {(selectedHistoryItem
                       ? selectedHistoryItem.content.split("\n\n")
                       : generatedContent
-                    ).map((tweet, index) => (
+                    ).map((tweet) => (
                       <div
-                        key={index}
+                        key={tweet}
                         className="bg-gray-700 p-4 rounded-xl relative"
                       >
                         <ReactMarkdown className="prose prose-invert max-w-none mb-2 text-sm">
