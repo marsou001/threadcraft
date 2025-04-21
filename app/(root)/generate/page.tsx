@@ -70,6 +70,7 @@ export default function GenerateContent() {
   const [history, setHistory] = useState<History>([]);
   const [selectedHistoryItem, setSelectedHistoryItem] = useState<HistoryItem | null>(null);
   const [userPoints, setUserPoints] = useState<number | null>(null);
+  const [numberOfTweets, setNumberOfTweets] = useState<number>(5);
   const [image, setImage] = useState<File | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<string[]>([]);
@@ -131,7 +132,7 @@ export default function GenerateContent() {
     const customSettings = { socialMedia: settings.socialMedia } as CustomSettings;
 
     if (customSettings.socialMedia === "X") {
-      customSettings.numberOfTweets = 5
+      customSettings.numberOfTweets = numberOfTweets;
     }
 
     // Generate content
@@ -292,6 +293,28 @@ export default function GenerateContent() {
                   </SelectContent>
                 </Select>
               </div>
+
+              {settings.socialMedia === "X" && (
+                <div>
+                  <label className="text-gray-300 text-sm font-medium block mb-2">
+                    Number of tweets
+                  </label>
+                  <Select
+                    onValueChange={(e) => setNumberOfTweets(Number(e))}
+                  >
+                    <SelectTrigger className="bg-gray-700 w-full border-none rounded-xl cursor-pointer">
+                      <SelectValue placeholder="Select tone" />
+                    </SelectTrigger>
+                    <SelectContent className="text-white bg-gray-800">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30].map((number) => (
+                        <SelectItem key={number} value={String(number)} className="cursor-pointer">
+                          <div className="flex items-center">{ number }</div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               <div>
                 <label
