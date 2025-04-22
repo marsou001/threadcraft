@@ -27,6 +27,7 @@ import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { generateContent } from "@/services/content";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Slider } from "@/components/ui/slider";
 
 const mockHistory: History = [
   {
@@ -51,6 +52,7 @@ const initialSettings: CommonSettings = {
   socialMedia: "LinkedIn",
   tone: "Casual",
   prompt: "",
+  numberOfHashtags: 5,
 }
 
 function settingsReducer(state: CommonSettings, action: SettingsAction): CommonSettings {
@@ -61,6 +63,8 @@ function settingsReducer(state: CommonSettings, action: SettingsAction): CommonS
       return { ...state, tone: action.payload };
     case SettingsActionType.UPDATE_PROMPT:
       return { ...state, prompt: action.payload };
+    case SettingsActionType.UPDATE_NUMBER_OF_HASHTAGS:
+      return { ...state, numberOfHashtags: action.payload };
     default:
       return state;
   }
@@ -305,6 +309,7 @@ export default function GenerateContent() {
                   <label className="text-gray-300 text-sm font-medium block mb-2">
                     Number of tweets
                   </label>
+                  {/* TODO: switch to slider */}
                   <Select
                     onValueChange={(e) => setNumberOfTweets(Number(e))}
                   >
@@ -336,6 +341,24 @@ export default function GenerateContent() {
                   onChange={(e) => dispatch({ type: SettingsActionType.UPDATE_PROMPT, payload: e.target.value })}
                   rows={4}
                   className="bg-gray-700 w-full p-3 border-none rounded-xl resize-none"
+                />
+              </div>
+              
+              <div>
+                <label
+                  htmlFor="number-of-hashtags"
+                  className="text-gray-300 text-sm font-medium block mb-2"
+                >
+                  Number of hashtags - {settings.numberOfHashtags}
+                </label>
+                <Slider
+                  id="number-of-hashtags"
+                  defaultValue={[initialSettings.numberOfHashtags]}
+                  max={30}
+                  step={1}
+                  value={[settings.numberOfHashtags]}
+                  onValueChange={(value) => dispatch({ type: SettingsActionType.UPDATE_NUMBER_OF_HASHTAGS, payload: value[0] })}
+                  className="cursor-pointer" 
                 />
               </div>
 

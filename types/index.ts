@@ -43,8 +43,9 @@ export type ContentType = {
 
 export type CommonSettings = {
   socialMedia: SocialMedia;
-  prompt: string;
   tone: Tone;
+  prompt: string;
+  numberOfHashtags: number;
 }
 
 export type XSettings = {
@@ -67,6 +68,7 @@ export enum SettingsActionType {
   UPDATE_SOCIAL_MEDIA = "UPDATE_SOCIAL_MEDIA",
   UPDATE_TONE = "UPDATE_TONE",
   UPDATE_PROMPT = "UPDATE_PROMPT",
+  UPDATE_NUMBER_OF_HASHTAGS = "UPDATE_NUMBER_OF_HASHTAGS",
 }
 export type SettingsAction = {
   type: SettingsActionType.UPDATE_SOCIAL_MEDIA;
@@ -77,4 +79,7 @@ export type SettingsAction = {
 } | {
   type: SettingsActionType.UPDATE_PROMPT;
   payload: string;
+} | {
+  type: SettingsActionType.UPDATE_NUMBER_OF_HASHTAGS;
+  payload: number;
 };
