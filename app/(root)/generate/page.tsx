@@ -306,24 +306,18 @@ export default function GenerateContent() {
 
               {settings.socialMedia === "X" && (
                 <div>
-                  <label className="text-gray-300 text-sm font-medium block mb-2">
-                    Number of tweets
+                  <label htmlFor="number-of-tweets" className="text-gray-300 text-sm font-medium block mb-2">
+                    Number of tweets - {numberOfTweets}
                   </label>
-                  {/* TODO: switch to slider */}
-                  <Select
-                    onValueChange={(e) => setNumberOfTweets(Number(e))}
-                  >
-                    <SelectTrigger className="bg-gray-700 w-full border-none rounded-xl cursor-pointer">
-                      <SelectValue placeholder="Select tone" />
-                    </SelectTrigger>
-                    <SelectContent className="text-white bg-gray-800">
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30].map((number) => (
-                        <SelectItem key={number} value={String(number)} className="cursor-pointer">
-                          <div className="flex items-center">{ number }</div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Slider
+                    id="number-of-tweets"
+                    defaultValue={[numberOfTweets]}
+                    max={30}
+                    step={1}
+                    value={[numberOfTweets]}
+                    onValueChange={(value) => setNumberOfTweets(value[0])}
+                    className="cursor-pointer" 
+                  />
                 </div>
               )}
 
