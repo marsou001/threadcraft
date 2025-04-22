@@ -129,6 +129,20 @@ export default function GenerateContent() {
     if (e.target.files) setImage(e.target.files[0]);
   }
 
+  function imageToBase64(image: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = function() {
+        const base64ImagePrompt = reader.result as string;
+        resolve(base64ImagePrompt);
+      }
+      reader.onerror = function(error) {
+        reject(error);
+      }
+      reader.readAsDataURL(image);
+    })
+  }
+
   async function handleGenerateContent(e: FormEvent) {
     e.preventDefault();
     
@@ -145,6 +159,17 @@ export default function GenerateContent() {
       customSettings.numberOfTweets = numberOfTweets;
     }
 
+    if (customSettings.socialMedia === "Instagram" && image !== null) {
+      try {
+        customSettings.imagePrompt = await imageToBase64(image);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.log("Error: ", error.message);
+        }
+        return;
+      }
+    }
+
     // Generate content
     try {
       const content = await generateContent(userId!, settings, customSettings);
@@ -154,13 +179,13 @@ export default function GenerateContent() {
 
       if (settings.socialMedia === "X") {
         const threads = content.split(/\n\n/);
-        debugger
         setGeneratedContent(threads);
       }
 
+      setGeneratedContent([content])
     } catch (error) {
       if (error instanceof Error) {
-        console.log("error: ", error.message);
+        console.log("Error: ", error.message);
       }
     }
     
@@ -337,6 +362,8 @@ export default function GenerateContent() {
                   className="bg-gray-700 w-full p-3 border-none rounded-xl resize-none"
                 />
               </div>
+
+              {/* TODO: number of characters */}
               
               <div>
                 <label
