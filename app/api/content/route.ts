@@ -5,54 +5,70 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { userId, settings, customSettings } = body;
+  const { userId, settings } = body;
 
   if (userId === null) {
     return new Response("No user id param was found in the request", { status: 400 });
   }
 
-  const { socialMedia, prompt, tone, numberOfHashtags } = settings;
+  const { socialMedia, prompt, tone, numberOfHashtags, ...customSettings } = settings;
+  const promptText = `Generate ${socialMedia} content in an ${tone} tone, with this instruction(s): "${prompt}". Add ${numberOfHashtags} related hashtags at the end.`;
+  let response: OpenAI.Responses.Response;
 
-  let promptText = `Generate ${socialMedia} content in an ${tone} tone, with this instruction(s): "${prompt}". Add ${numberOfHashtags} related hashtags at the end.`;
-
-  // Instagram image description
-  if (customSettings.socialMedia === "Instagram" && customSettings.imagePrompt !== undefined) {
-    const response = await openai.responses.create({
-      model: "gpt-4.1-mini",
-      input: [
-        {
-          role: "user",
-          content: [
-            { type: "input_text", text: promptText + " Use the image supplied in addition to the instruction as guidelines." },
-            {
-              detail: "high",
-              type: "input_image",
-              image_url: customSettings.imagePrompt,
-            },
-          ],
-        },
-      ],
-    });
-
+  switch(socialMedia) {
+    case "X":
+      response = await generateXContent(promptText, customSettings.numberOfTweets);
+    case "Instagram":
+      response = await generateInstagramContent(promptText, customSettings.imagePrompt);
+    case "LinkedIn":
+      response = await generateLinkedInContent(promptText);
+      
     if (response.error !== null) {
       return new Response(response.error.message, { status: 502 });
     }
-
+    
+    await saveGeneratedContent(userId, response.output_text, settings);
     return Response.json({ generatedContent: response.output_text }, { status: 200 });
   }
+}
 
-  if (customSettings.socialMedia === "X") promptText += ` Provide a thread of ${customSettings.numberOfTweets} tweets, each under 280 characters.`;
+async function generateXContent(promptText: string, numberOfTweets: number) {
+  promptText += ` Provide a thread of ${numberOfTweets} tweets, each under 280 characters.`;
 
   const response = await openai.responses.create({
     model: "gpt-3.5-turbo",
     input: promptText,
   });
 
-  if (response.error !== null) {
-    return new Response(response.error.message, { status: 502 });
-  }
+  return response;
+}
 
-  // await saveGeneratedContent(userId, { prompt, socialMedia, content: response.output_text });
+async function generateInstagramContent(promptText: string, imagePrompt: string) {
+  const response = await openai.responses.create({
+    model: "gpt-4.1-mini",
+    input: [
+      {
+        role: "user",
+        content: [
+          { type: "input_text", text: promptText + " Use the image supplied in addition to the instruction as guidelines." },
+          {
+            detail: "high",
+            type: "input_image",
+            image_url: imagePrompt,
+          },
+        ],
+      },
+    ],
+  });
 
-  return Response.json({ generatedContent: response.output_text }, { status: 200 });
+  return response;
+}
+
+async function generateLinkedInContent(promptText: string) {
+  const response = await openai.responses.create({
+    model: "gpt-3.5-turbo",
+    input: promptText,
+  });
+
+  return response;
 }
