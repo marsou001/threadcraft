@@ -27,7 +27,7 @@ export async function getUser(id: number) {
 }
 
 export async function getUserByClerkId(userId: string) {
-  console.log("Fetching user by Clerk id ", userId);
+  console.log("Fetching user by Clerk id", userId);
 
   const [user] = await db
     .select()
@@ -49,7 +49,7 @@ export async function getUsersByEmail(email: string) {
 }
 
 export async function getUserPoints(userId: string) {
-  console.log("Fetching points for user ", userId);
+  console.log("Fetching points for user", userId);
 
   const [user] = await db
     .select({ points: Users.points })
@@ -61,7 +61,7 @@ export async function getUserPoints(userId: string) {
 } 
 
 export async function updateUserPoints(userId: string, newPoints: number) {
-  console.log("Updating points for user ", userId);
+  console.log("Updating points for user", userId);
 
   const [user] = await db
     .update(Users)
@@ -73,7 +73,7 @@ export async function updateUserPoints(userId: string, newPoints: number) {
 }
 
 export async function saveGeneratedContent(userId: string, generatedContent: string, settings: Settings) {
-  console.log("Saving generated content for user ", userId);
+  console.log("Saving generated content for user", userId);
 
   const [content] = await db
     .insert(GeneratedContent)

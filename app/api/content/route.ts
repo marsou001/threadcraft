@@ -18,18 +18,24 @@ export async function POST(req: Request) {
   switch(socialMedia) {
     case "X":
       response = await generateXContent(promptText, customSettings.numberOfTweets);
+      break;
     case "Instagram":
       response = await generateInstagramContent(promptText, customSettings.imagePrompt);
+      break;
     case "LinkedIn":
       response = await generateLinkedInContent(promptText);
-      
-    if (response.error !== null) {
-      return new Response(response.error.message, { status: 502 });
-    }
-    
-    await saveGeneratedContent(userId, response.output_text, settings);
-    return Response.json({ generatedContent: response.output_text }, { status: 200 });
+      break;
+    default:
+      response = await generateLinkedInContent(promptText);
+      break;
   }
+  
+  if (response.error !== null) {
+    return new Response(response.error.message, { status: 502 });
+  }
+  
+  await saveGeneratedContent(userId, response.output_text, settings);
+  return Response.json({ generatedContent: response.output_text }, { status: 200 });
 }
 
 async function generateXContent(promptText: string, numberOfTweets: number) {
