@@ -1,9 +1,9 @@
-import { CommonSettings, CustomSettings } from "@/types";
+import { Settings } from "@/types";
 
-export async function generateContent(userId: string, settings: CommonSettings, customSettings: CustomSettings): Promise<string> {
+export async function generateContent(userId: string, settings: Settings): Promise<string> {
   const response = await fetch("/api/content", {
     method: "POST",
-    body: JSON.stringify({ userId, settings, customSettings }),
+    body: JSON.stringify({ userId, settings }),
     headers: { "Content-Type": "application/json" },
   })
 

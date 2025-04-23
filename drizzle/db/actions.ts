@@ -1,7 +1,7 @@
 import { db } from ".";
 import { GeneratedContent, Users } from "./schema";
 import { eq } from "drizzle-orm";
-import { HistoryItem as Content } from "@/types";
+import { Settings } from "@/types";
 
 export async function createUser(clerkId: string, email: string, name: string) {
   console.log("Creating user ", clerkId, email, name);
@@ -72,14 +72,13 @@ export async function updateUserPoints(userId: string, newPoints: number) {
   return user.points;
 }
 
-export async function saveGeneratedContent(userId: string, generatedContent: Omit<Content, "id" | "createdAt">) {
+export async function saveGeneratedContent(userId: string, generatedContent: string, settings: Settings) {
   console.log("Saving generated content for user ", userId);
 
   const [content] = await db
     .insert(GeneratedContent)
-    .values({ userId, content: generatedContent.content, prompt: generatedContent.prompt, socialMedia: generatedContent.socialMedia })
+    .values({ userId, content: generatedContent, ...settings })
     .returning()
     .execute();
-  
   return content;
 }
