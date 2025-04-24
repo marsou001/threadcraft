@@ -46,13 +46,34 @@ export async function POST(req: Request) {
     return new Response(response.error.message, { status: 502 });
   }
   
-  await saveGeneratedContent(userId, response.output_text, settings);
-  return Response.json({ generatedContent: response.output_text }, { status: 200 });
+  const generatedContent = await saveGeneratedContent(userId, response.output_text, settings);
+  return Response.json({ generatedContent: generatedContent }, { status: 200 });
 }
 
 async function generateXContent(promptText: string, numberOfTweets: number) {
   promptText += ` Provide a thread of ${numberOfTweets} tweets, each under 280 characters.`;
+  const response = await generateContent(promptText)
+  return response;
+}
 
+async function generateInstagramContent(promptText: string, imagePrompt: string | null) {
+  let response: OpenAI.Responses.Response & { _request_id?: string | null };
+
+  if (imagePrompt === null) {
+    response = await generateContent(promptText);
+  } else {
+    response = await generateContentWithImageDescription(promptText, imagePrompt);
+  }
+
+  return response;
+}
+
+async function generateLinkedInContent(promptText: string) {
+  const response = await generateContent(promptText);
+  return response;
+}
+
+async function generateContent(promptText: string) {
   const response = await openai.responses.create({
     model: "gpt-3.5-turbo",
     input: promptText,
@@ -61,7 +82,7 @@ async function generateXContent(promptText: string, numberOfTweets: number) {
   return response;
 }
 
-async function generateInstagramContent(promptText: string, imagePrompt: string) {
+async function generateContentWithImageDescription(promptText: string, imagePrompt: string) {
   const response = await openai.responses.create({
     model: "gpt-4.1-mini",
     input: [
@@ -77,15 +98,6 @@ async function generateInstagramContent(promptText: string, imagePrompt: string)
         ],
       },
     ],
-  });
-
-  return response;
-}
-
-async function generateLinkedInContent(promptText: string) {
-  const response = await openai.responses.create({
-    model: "gpt-3.5-turbo",
-    input: promptText,
   });
 
   return response;

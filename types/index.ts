@@ -69,7 +69,7 @@ type XSettings = {
 };
 
 type InstagramSettings = {
-  imagePrompt?: string;
+  imagePrompt: string | null;
 };
 
 type LinkedInSettings = {};

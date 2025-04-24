@@ -96,7 +96,7 @@ export default function GenerateContent() {
     
     if (item.socialMedia === "X") {
       setNumberOfTweets(item.numberOfTweets)
-    } else if (item.socialMedia === "Instagram" && item.imagePrompt !== undefined) {
+    } else if (item.socialMedia === "Instagram" && item.imagePrompt !== null) {
       const image = dataURLToImage(item.imagePrompt);
       setImage(image);
     }
@@ -141,16 +141,20 @@ export default function GenerateContent() {
     if (settings.socialMedia === "X") {
       settings.numberOfTweets = numberOfTweets;
     }
-    if (settings.socialMedia === "Instagram" && image !== null) {
-      try {
-        const imagePrompt = await imageToDataURL(image);
-        settings.imagePrompt = imagePrompt;
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log("Error: ", error.message);
+
+    if (settings.socialMedia === "Instagram") {
+      let imagePrompt: string | null = null;
+      if (image !== null) {
+        try {
+          imagePrompt = await imageToDataURL(image);
+        } catch (error) {
+          if (error instanceof Error) {
+            console.log("Error: ", error.message);
+          }
+          return;
         }
-        return;
       }
+      settings.imagePrompt = imagePrompt;
     }
 
     // Generate content
