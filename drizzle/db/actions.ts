@@ -82,3 +82,14 @@ export async function saveGeneratedContent(userId: string, generatedContent: str
     .execute();
   return content;
 }
+
+export async function getAllGeneratedContentForUser(userId: string) {
+  console.log("Fetching content for user", userId);
+
+  const allGeneratedContent = await db
+    .select()
+    .from(GeneratedContent)
+    .where(eq(GeneratedContent.userId, userId))
+    .execute();
+  return allGeneratedContent;
+}

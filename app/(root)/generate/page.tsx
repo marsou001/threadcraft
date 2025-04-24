@@ -25,7 +25,7 @@ import InstagramMock from "@/components/social-mocks/InstagramMock";
 import LinkedInMock from "@/components/social-mocks/LinkedInMock";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { generateContent } from "@/services/content";
+import { generateContent, getHistory } from "@/services/content";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 
@@ -70,10 +70,10 @@ function commonSettingsReducer(state: CommonSettings, action: SettingsAction): C
 
 export default function GenerateContent() {
   const [commonSettings, dispatch] = useReducer(commonSettingsReducer, initialCommonSettings);
-  const [history, setHistory] = useState<History>([]);
+  const [history, setHistory] = useState<History>();
   const [socialMedia, setSocialMedia] = useState<SocialMedia>();
   const [selectedHistoryItem, setSelectedHistoryItem] = useState<GeneratedContent | null>(null);
-  const [userPoints, setUserPoints] = useState<number | null>(null);
+  const [userPoints, setUserPoints] = useState<number>();
   const [numberOfTweets, setNumberOfTweets] = useState<number>(5);
   const [shouldAddAIDescription, setShouldAddAIDescription] = useState(false);
   const [image, setImage] = useState<File | null>(null);
@@ -84,13 +84,12 @@ export default function GenerateContent() {
   const { isLoaded, isSignedIn, userId } = useAuth();
   const router = useRouter();
 
-  const isSubmitButtonDisabled = isGenerating || commonSettings.prompt === "" || userPoints === null || userPoints < POINTS_PER_GENERATION;
+  const isSubmitButtonDisabled = isGenerating || commonSettings.prompt === "" || userPoints === undefined || userPoints < POINTS_PER_GENERATION;
 
   async function fetchUserHistory() {
     try {
-      // TODO: fetch user history from database
-      // const contentHistory = await getGeneratedContentHistory(user.id);
-      setHistory(mockHistory);
+      const history = await getHistory(userId!);
+      setHistory(history);
     } catch (error) {
       if (error instanceof Error) {
         console.log("error: ", error.message);
@@ -145,7 +144,7 @@ export default function GenerateContent() {
   async function handleGenerateContent(e: FormEvent) {
     e.preventDefault();
     
-    if (userPoints === null || userPoints === undefined || userPoints < 5) {
+    if (userPoints === undefined || userPoints < 5) {
       console.log("Not enough points");
       // Maybe redirect to pricing page?
       return;
@@ -242,7 +241,7 @@ export default function GenerateContent() {
               <Clock className="h-6 w-6 text-blue-400" />
             </div>
             <div className="space-y-4">
-              {history.map((item) => (
+              {history === undefined ? "Loading... " : history.map((item) => (
                 <div
                   key={item.id}
                   className="p-4 bg-gray-700 rounded-xl hover:bg-gray-600 transition-colors cursor-pointer"
@@ -275,7 +274,7 @@ export default function GenerateContent() {
                 <div>
                   <p className="text-sm text-gray-400">Available Points</p>
                   <p className="text-2xl font-bold text-yellow-400">
-                    { userPoints !== null ? userPoints : "Loading..." }
+                    { userPoints === undefined ? "Loading..." : userPoints }
                   </p>
                 </div>
               </div>

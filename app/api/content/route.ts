@@ -1,7 +1,19 @@
-import { saveGeneratedContent } from "@/drizzle/db/actions";
+import { getAllGeneratedContentForUser, saveGeneratedContent } from "@/drizzle/db/actions";
 import OpenAI from "openai";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+export async function GET(req: Request) {
+  const requestUrl = new URL(req.url);
+  const clerkUserId = requestUrl.searchParams.get("clerk_user");
+
+  if (clerkUserId === null) {
+    return new Response("No Clerk user param was found in the request", { status: 400 });
+  }
+
+  const allGeneratedContent = await getAllGeneratedContentForUser(clerkUserId);
+  return Response.json({ allGeneratedContent }, { status: 200 });
+}
 
 export async function POST(req: Request) {
   const body = await req.json();
