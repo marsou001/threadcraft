@@ -284,7 +284,7 @@ export default function GenerateContent() {
                 <label className="text-gray-300 text-sm font-medium block mb-2">
                   Content Type
                 </label>
-                <Select onValueChange={(v) => setSocialMedia(v as SocialMedia)}>
+                <Select onValueChange={(v) => setSocialMedia(v as SocialMedia)} value={socialMedia}>
                   <SelectTrigger className="bg-gray-700 w-full border-none rounded-xl cursor-pointer">
                     <SelectValue placeholder="Select content type" />
                   </SelectTrigger>
@@ -307,6 +307,7 @@ export default function GenerateContent() {
                 </label>
                 <Select
                   onValueChange={(v) => dispatch({ type: SettingsActionType.UPDATE_TONE, payload: v as Tone })}
+                  value={commonSettings.tone}
                 >
                   <SelectTrigger className="bg-gray-700 w-full border-none rounded-xl cursor-pointer">
                     <SelectValue placeholder="Select tone" />
