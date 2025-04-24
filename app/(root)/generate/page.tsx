@@ -136,7 +136,6 @@ export default function GenerateContent() {
     }
 
     setIsGenerating(true);
-    // let customSettings: CustomSettings = {} as CustomSettings<SocialMedia>;
     const settings = { ...commonSettings, socialMedia } as Settings;
 
     if (settings.socialMedia === "X") {
