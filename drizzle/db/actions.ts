@@ -1,6 +1,6 @@
 import { db } from ".";
 import { GeneratedContent, Users } from "./schema";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { Settings } from "@/types";
 
 export async function createUser(clerkId: string, email: string, name: string) {
@@ -90,6 +90,7 @@ export async function getAllGeneratedContentForUser(userId: string) {
     .select()
     .from(GeneratedContent)
     .where(eq(GeneratedContent.userId, userId))
+    .orderBy(desc(GeneratedContent.createdAt))
     .execute();
   return allGeneratedContent;
 }
