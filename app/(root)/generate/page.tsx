@@ -232,7 +232,10 @@ export default function GenerateContent() {
               {history === undefined ? "Loading..." : history.map((item) => (
                 <div
                   key={item.id}
-                  className="p-4 bg-gray-700 rounded-xl hover:bg-gray-600 transition-colors cursor-pointer"
+                  className={cn("p-4 rounded-xl transition-colors cursor-pointer", {
+                    "bg-gray-600": item.id === selectedHistoryItem?.id,
+                    "bg-gray-700 hover:bg-gray-600": item.id !== selectedHistoryItem?.id,
+                  })}
                   onClick={() => handleHistoryItemClick(item)}
                 >
                   <div className="flex items-center mb-2">
