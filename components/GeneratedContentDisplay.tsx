@@ -7,12 +7,12 @@ import { SocialMedia } from "@/types";
 import { Copy, CopyCheck } from "lucide-react";
 
 export type GeneratedContentDisplayProps = {
-  title: string;
+  isContentFromHistory: boolean;
   socialMedia: SocialMedia;
-  generatedContent: string | string[];
+  generatedContent: string[];
 };
 
-export default function GeneratedContentDisplay({ title, socialMedia, generatedContent }: GeneratedContentDisplayProps) {
+export default function GeneratedContentDisplay({ isContentFromHistory, socialMedia, generatedContent }: GeneratedContentDisplayProps) {
   const [copiedText, setCopiedText] = useState<string | null>(null);
 
   async function copy(text: string) {
@@ -27,13 +27,12 @@ export default function GeneratedContentDisplay({ title, socialMedia, generatedC
 
   return (
     <div className="bg-gray-800 p-6 rounded-2xl">
-      <h2 className="text-blue-400 text-2xl font-semibold mb-4">{ title }</h2>
+      <h2 className="text-blue-400 text-2xl font-semibold mb-4">
+        { isContentFromHistory ? "From Your History" : "Generated Content" }
+      </h2>
       {socialMedia === "X" ? (
         <div className="space-y-4">
-          {(typeof generatedContent === "string"
-            ? generatedContent.split("\n\n")
-            : generatedContent
-          ).map((tweet) => (
+          {generatedContent.map((tweet) => (
             <div key={tweet} className="bg-gray-700 relative p-4 rounded-xl">
               <ReactMarkdown>{ tweet }</ReactMarkdown>
               <div className="text-gray-400 text-xs flex justify-between items-center mt-2">
@@ -55,9 +54,7 @@ export default function GeneratedContentDisplay({ title, socialMedia, generatedC
       ) : (
         <div className="bg-gray-700 p-4 rounded-xl">
           <ReactMarkdown>
-            {typeof generatedContent === "string"
-              ? generatedContent
-              : generatedContent[0]}
+            { generatedContent[0] }
           </ReactMarkdown>
         </div>
       )}

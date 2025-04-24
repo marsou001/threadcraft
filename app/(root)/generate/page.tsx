@@ -69,6 +69,7 @@ export default function GenerateContent() {
   const [image, setImage] = useState<File | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<string[]>([]);
+  const [isContentFromHistory, setIsContentFromHistory] = useState(false);
 
   const hiddenFileInputRef = useRef<HTMLInputElement>(null);
   const { isLoaded, isSignedIn, userId } = useAuth();
@@ -105,6 +106,7 @@ export default function GenerateContent() {
         ? item.content.split("\n\n")
         : [item.content]
     );
+    setIsContentFromHistory(true);
   };
 
   async function fetchUserPoints() {
@@ -171,11 +173,13 @@ export default function GenerateContent() {
     if (socialMedia === "X") {
       const threads = newlyGeneratedContent.content.split(/\n\n/);
       setGeneratedContent(threads);
+    } else {
+      setGeneratedContent([newlyGeneratedContent.content]);
     }
 
-    setGeneratedContent([newlyGeneratedContent.content]);
-    setHistory((history) => [ newlyGeneratedContent, ...history! ]);
-    
+    setHistory((history) => [newlyGeneratedContent, ...history!]);
+    setSelectedHistoryItem(newlyGeneratedContent);
+    setIsContentFromHistory(false);
     // Update user points
     // const newUserPoints = userPoints - POINTS_PER_GENERATION;
     // try {
@@ -434,10 +438,8 @@ export default function GenerateContent() {
             </form>
 
             {/* Generated content display */}
-            {generatedContent.length > 0 ? (
-              <GeneratedContentDisplay title="Generated Content" socialMedia={socialMedia} generatedContent={generatedContent} />
-            ) : selectedHistoryItem !== null && (
-              <GeneratedContentDisplay title="From History" socialMedia={selectedHistoryItem.socialMedia} generatedContent={selectedHistoryItem.content} />
+            {generatedContent.length > 0 && (
+              <GeneratedContentDisplay isContentFromHistory={isContentFromHistory} socialMedia={socialMedia} generatedContent={generatedContent} />
             )}
 
             {/* Content preview */}
