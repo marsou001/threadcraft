@@ -11,7 +11,6 @@ import {
 import {
   Loader2,
   Upload,
-  Copy,
   Clock,
   Zap,
 } from "lucide-react";
@@ -30,6 +29,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import imageToDataURL from "@/utils/imageToDataURL";
 import dataURLToImage from "@/utils/dataURLToImage";
+import GeneratedContentDisplay from "@/components/GeneratedContentDisplay";
 
 const contentTypes: ContentType[] = [
   { socialMedia: "X", label: "Twitter Thread" },
@@ -61,7 +61,7 @@ function commonSettingsReducer(state: CommonSettings, action: SettingsAction): C
 export default function GenerateContent() {
   const [commonSettings, dispatch] = useReducer(commonSettingsReducer, initialCommonSettings);
   const [history, setHistory] = useState<History>();
-  const [socialMedia, setSocialMedia] = useState<SocialMedia>();
+  const [socialMedia, setSocialMedia] = useState<SocialMedia>("LinkedIn");
   const [selectedHistoryItem, setSelectedHistoryItem] = useState<GeneratedContent | null>(null);
   const [userPoints, setUserPoints] = useState<number>();
   const [numberOfTweets, setNumberOfTweets] = useState<number>(5);
@@ -154,23 +154,23 @@ export default function GenerateContent() {
     }
 
     // Generate content
+    let newlyGeneratedContent: GeneratedContent;
     try {
-      const content = await generateContent(userId!, settings);
-      if (socialMedia === "LinkedIn") {
-        setGeneratedContent([content]);
-      }
-
-      if (socialMedia === "X") {
-        const threads = content.split(/\n\n/);
-        setGeneratedContent(threads);
-      }
-
-      setGeneratedContent([content])
+      newlyGeneratedContent = await generateContent(userId!, settings);
     } catch (error) {
       if (error instanceof Error) {
         console.log("Error: ", error.message);
       }
+      return;
     }
+
+    if (socialMedia === "X") {
+      const threads = newlyGeneratedContent.content.split(/\n\n/);
+      setGeneratedContent(threads);
+    }
+
+    setGeneratedContent([newlyGeneratedContent.content]);
+    setHistory((history) => [ newlyGeneratedContent, ...history! ]);
     
     // Update user points
     // const newUserPoints = userPoints - POINTS_PER_GENERATION;
@@ -225,7 +225,7 @@ export default function GenerateContent() {
               <Clock className="h-6 w-6 text-blue-400" />
             </div>
             <div className="space-y-4">
-              {history === undefined ? "Loading... " : history.map((item) => (
+              {history === undefined ? "Loading..." : history.map((item) => (
                 <div
                   key={item.id}
                   className="p-4 bg-gray-700 rounded-xl hover:bg-gray-600 transition-colors cursor-pointer"
@@ -427,49 +427,11 @@ export default function GenerateContent() {
             </form>
 
             {/* Generated content display */}
-            {/* {(selectedHistoryItem || generatedContent.length > 0) && (
-              <div className="bg-gray-800 p-6 rounded-2xl space-y-4">
-                <h2 className="text-blue-400 text-2xl font-semibold">
-                  {selectedHistoryItem ? "History Item" : "Generated Content"}
-                </h2>
-                {contentType === "twitter" ? (
-                  <div className="space-y-4">
-                    {(selectedHistoryItem
-                      ? selectedHistoryItem.content.split("\n\n")
-                      : generatedContent
-                    ).map((tweet) => (
-                      <div
-                        key={tweet}
-                        className="bg-gray-700 p-4 rounded-xl relative"
-                      >
-                        <ReactMarkdown className="prose prose-invert max-w-none mb-2 text-sm">
-                          {tweet}
-                        </ReactMarkdown>
-                        <div className="flex justify-between items-center text-gray-400 text-xs mt-2">
-                          <span>
-                            {tweet.length}/{MAX_TWEET_LENGTH}
-                          </span>
-                          <Button
-                            onClick={() => copyToClipboard(tweet)}
-                            className="bg-gray-600 hover:bg-gray-500 text-white rounded-full p-2 transition-colors"
-                          >
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="bg-gray-700 p-4 rounded-xl">
-                    <ReactMarkdown className="prose prose-invert max-w-none text-sm">
-                      {selectedHistoryItem
-                        ? selectedHistoryItem.content
-                        : generatedContent[0]}
-                    </ReactMarkdown>
-                  </div>
-                )}
-              </div>
-            )} */}
+            {generatedContent.length > 0 ? (
+              <GeneratedContentDisplay title="Generated Content" socialMedia={socialMedia} generatedContent={generatedContent} />
+            ) : selectedHistoryItem !== null && (
+              <GeneratedContentDisplay title="From History" socialMedia={selectedHistoryItem.socialMedia} generatedContent={selectedHistoryItem.content} />
+            )}
 
             {/* Content preview */}
             {generatedContent.length > 0 && (
