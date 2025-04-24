@@ -12,7 +12,7 @@ export default function ({ content }: { content: string[] }) {
         </div>
       </div>
       {content.map((tweet, index) => (
-        <div key={index} className={cn("pt-4", { "mt-4 border-t border-gray-200": index !== 0 })}>
+        <div key={tweet} className={cn("pt-4", { "mt-4 border-t border-gray-200": index !== 0 })}>
           <p>{tweet}</p>
           <div className="text-gray-500 flex justify-between mt-3">
             <MessageCircle size={18} />
