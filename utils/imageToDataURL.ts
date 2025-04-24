@@ -1,4 +1,4 @@
-export default function imageToBase64(image: File): Promise<string> {
+export default function imageToDatURL(image: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onloadend = function() {
