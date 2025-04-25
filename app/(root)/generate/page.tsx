@@ -30,6 +30,7 @@ import { Slider } from "@/components/ui/slider";
 import imageToDataURL from "@/utils/imageToDataURL";
 import dataURLToImage from "@/utils/dataURLToImage";
 import GeneratedContentDisplay from "@/components/GeneratedContentDisplay";
+import UserHistory from "@/components/UserHistory";
 
 const contentTypes: ContentType[] = [
   { socialMedia: "X", label: "Twitter Thread" },
@@ -227,38 +228,7 @@ export default function GenerateContent() {
       <div className="container mx-auto px-4 mb-8 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 mt-14 lg:grid-cols-3 gap-8">
           {/* Left sidebar - History */}
-          <div className="lg:col-span-1 bg-gray-800 rounded-2xl p-6 h-[calc(100vh-12rem)] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold text-blue-400">History</h2>
-              <Clock className="h-6 w-6 text-blue-400" />
-            </div>
-            <div className="space-y-4">
-              {history === undefined ? "Loading..." : history.map((item) => (
-                <div
-                  key={item.id}
-                  className={cn("p-4 rounded-xl transition-colors cursor-pointer", {
-                    "bg-gray-600": item.id === selectedHistoryItem?.id,
-                    "bg-gray-700 hover:bg-gray-600": item.id !== selectedHistoryItem?.id,
-                  })}
-                  onClick={() => handleHistoryItemClick(item)}
-                >
-                  <div className="flex items-center mb-2">
-                    <Image src={`/icons/${item.socialMedia}.png`} alt={item.socialMedia} width={24} height={24} className="mr-2 h-5 w-5" />
-                    <span className="text-sm font-medium">
-                      {item.socialMedia}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-300 truncate">
-                    {item.prompt}
-                  </p>
-                  <div className="flex items-center text-xs text-gray-400 mt-2">
-                    <Clock className="mr-1 h-3 w-3" />
-                    {new Date(item.createdAt).toLocaleString()}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <UserHistory history={history} selectedHistoryItemId={selectedHistoryItem?.id} handleHistoryItemClick={handleHistoryItemClick} />
 
           {/* Main content area */}
           <div className="lg:col-span-2 space-y-6">
