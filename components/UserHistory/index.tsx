@@ -3,7 +3,7 @@ import { Clock, SearchX } from "lucide-react";
 import UserHistoryItem from "./UserHistoryItem";
 
 export type HistoryProps = {
-  history: HistoryType | undefined;
+  history: HistoryType;
   selectedHistoryItemId: number | undefined;
   handleHistoryItemClick: (item: GeneratedContent) => void
 }
@@ -17,7 +17,6 @@ export default function UserHistory({ history, selectedHistoryItemId, handleHist
       </div>
       <div className="space-y-4">
         {
-          history === undefined ? "Loading..." :
           history.length === 0  ? (
             <div className="text-gray-300">
               <div className="flex justify-center mb-4">

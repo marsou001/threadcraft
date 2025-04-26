@@ -8,9 +8,7 @@ export default function UserPoints({ points }: { points: number }) {
         <Zap className="h-8 w-8 text-yellow-400 mr-3" />
         <div>
           <p className="text-sm text-gray-400">Available Points</p>
-          <p className="text-2xl font-bold text-yellow-400">
-            { points === undefined ? "Loading..." : points }
-          </p>
+          <p className="text-2xl font-bold text-yellow-400">{ points }</p>
         </div>
       </div>
       <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded-full transition-colors">
