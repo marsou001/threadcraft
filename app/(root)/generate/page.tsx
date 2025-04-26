@@ -1,6 +1,5 @@
 "use client";
-import { useState, useEffect, ChangeEvent, useRef, FormEvent, useReducer } from "react";
-import Link from "next/link";
+import { useState, useEffect, ChangeEvent, useRef, FormEvent, useReducer, SetStateAction } from "react";
 import {
   Select,
   SelectContent,
@@ -11,19 +10,14 @@ import {
 import {
   Loader2,
   Upload,
-  Clock,
-  Zap,
 } from "lucide-react";
 import Image from "next/image";
 import { Settings, ContentType, History, GeneratedContent, SettingsAction, SettingsActionType, SocialMedia, Tone, CommonSettings } from "@/types";
 import { tones } from "@/data";
-import { getUserPoints, updateUserPoints } from "@/services/users";
 import { cn } from "@/lib/utils";
 import TwitterMock from "@/components/social-mocks/TwitterMock";
 import InstagramMock from "@/components/social-mocks/InstagramMock";
 import LinkedInMock from "@/components/social-mocks/LinkedInMock";
-import { useAuth } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 import { generateContent, getHistory } from "@/services/content";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
@@ -31,6 +25,8 @@ import imageToDataURL from "@/utils/imageToDataURL";
 import dataURLToImage from "@/utils/dataURLToImage";
 import GeneratedContentDisplay from "@/components/GeneratedContentDisplay";
 import UserHistory from "@/components/UserHistory";
+import UserPoints from "@/components/UserPoints";
+import useRequiredUserId from "@/hooks/useRequiredUserId";
 
 const contentTypes: ContentType[] = [
   { socialMedia: "X", label: "Twitter Thread" },
@@ -73,14 +69,13 @@ export default function GenerateContent() {
   const [isContentFromHistory, setIsContentFromHistory] = useState(false);
 
   const hiddenFileInputRef = useRef<HTMLInputElement>(null);
-  const { isLoaded, isSignedIn, userId } = useAuth();
-  const router = useRouter();
+  const userId = useRequiredUserId();
 
   const isSubmitButtonDisabled = isGenerating || commonSettings.prompt === "" || userPoints === undefined || userPoints < POINTS_PER_GENERATION;
 
   async function fetchUserHistory() {
     try {
-      const history = await getHistory(userId!);
+      const history = await getHistory(userId);
       setHistory(history);
     } catch (error) {
       if (error instanceof Error) {
@@ -109,17 +104,6 @@ export default function GenerateContent() {
     );
     setIsContentFromHistory(true);
   };
-
-  async function fetchUserPoints() {
-    try {
-      const points = await getUserPoints(userId!);
-      setUserPoints(points);
-    } catch(error) {
-      if (error instanceof Error) {
-        console.log("error: ", error.message);
-      }
-    }
-  }
 
   function toggleShouldAddAIDescription() {
     setShouldAddAIDescription(prev => !prev);
@@ -212,16 +196,8 @@ export default function GenerateContent() {
   };
   
   useEffect(() => {
-    if (!isLoaded) return;
-
-    if (isLoaded && !isSignedIn) {
-      router.push("/sign-in");
-      return;
-    }
-
     fetchUserHistory();
-    fetchUserPoints();
-  }, [isLoaded, isSignedIn]);
+  }, []);
 
   return (
     <div className="bg-gradient-to-br from-gray-900 to-black min-h-screen text-white">
@@ -233,20 +209,7 @@ export default function GenerateContent() {
           {/* Main content area */}
           <div className="lg:col-span-2 space-y-6">
             {/* Points display */}
-            <div className="bg-gray-800 p-6 rounded-2xl flex items-center justify-between">
-              <div className="flex items-center">
-                <Zap className="h-8 w-8 text-yellow-400 mr-3" />
-                <div>
-                  <p className="text-sm text-gray-400">Available Points</p>
-                  <p className="text-2xl font-bold text-yellow-400">
-                    { userPoints === undefined ? "Loading..." : userPoints }
-                  </p>
-                </div>
-              </div>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded-full transition-colors">
-                <Link href="/pricing">Get More Points</Link>
-              </button>
-            </div>
+            {<UserPoints userId={userId} setUserPoints={setUserPoints as (value: SetStateAction<number>) => void} points={userPoints} />}
 
             {/* Content generation form */}
             <form onSubmit={handleGenerateContent} className="bg-gray-800 p-6 rounded-2xl space-y-6">
