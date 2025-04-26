@@ -1,7 +1,7 @@
 import { db } from ".";
 import { GeneratedContent, InstagramSettings, LinkedInSettings, Users, XSettings } from "./schema";
 import { desc, eq } from "drizzle-orm";
-import type { GeneratedContent as Content, Settings } from "@/types";
+import type { GeneratedContent as Content, History, Settings } from "@/types";
 
 export async function createUser(clerkId: string, email: string, name: string) {
   console.log("Creating user ", clerkId, email, name);
@@ -109,9 +109,9 @@ export async function saveGeneratedContent(
   }
 }
 
-export async function getAllGeneratedContentForUser(userId: string): Promise<Content[]> {
+export async function getAllGeneratedContentForUser(userId: string): Promise<History> {
   console.log("Fetching content for user", userId);
-
+// TODO: use join
   const allGeneratedContent = await db
     .select()
     .from(GeneratedContent)
