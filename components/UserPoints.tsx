@@ -1,30 +1,7 @@
 import Link from "next/link";
 import { Zap } from "lucide-react";
-import { SetStateAction, useEffect } from "react";
-import { getUserPoints } from "@/services/users";
 
-export type UserPointsProps = {
-  userId: string;
-  points: number | undefined;
-  setUserPoints: (value: SetStateAction<number>) => void
-}
-
-export default function UserPoints({ userId, points, setUserPoints }: UserPointsProps) {
-  async function fetchUserPoints() {
-    try {
-      const points = await getUserPoints(userId);
-      setUserPoints(points);
-    } catch(error) {
-      if (error instanceof Error) {
-        console.log("error: ", error.message);
-      }
-    }
-  }
-
-  useEffect(() => {
-    fetchUserPoints();
-  }, []);
-
+export default function UserPoints({ points }: { points: number }) {
   return (
     <div className="bg-gray-800 p-6 rounded-2xl flex items-center justify-between">
       <div className="flex items-center">
