@@ -1,3 +1,4 @@
+import { integer } from "drizzle-orm/gel-core";
 import {
   pgTable,
   serial,
@@ -30,7 +31,25 @@ export const GeneratedContent = pgTable("generated_content", {
   tone: toneEnum("tone").notNull(),
   numberOfHashtags: smallint("number_of_hashtags").notNull(),
   socialMedia: socialMediaEnum("social_media").notNull(),
-  numberOfTweets: smallint("number_of_tweets"),
-  imagePrompt: text("image_prompt"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const XSettings = pgTable("x_settings", {
+  generatedContentId: serial("generated_content")
+    .references(() => GeneratedContent.id)
+    .notNull(),
+  numberOfTweets: smallint("number_of_tweets").notNull(),
+});
+
+export const InstagramSettings = pgTable("instagram_settings", {
+  generatedContentId: serial("generated_content")
+    .references(() => GeneratedContent.id)
+    .notNull(),
+  imagePrompt: text("image_prompt"),
+});
+
+export const LinkedInSettings = pgTable("linkedin_settings", {
+  generatedContentId: serial("generated_content")
+    .references(() => GeneratedContent.id)
+    .notNull(),
 });

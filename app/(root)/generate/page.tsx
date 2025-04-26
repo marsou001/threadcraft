@@ -138,6 +138,7 @@ export default function GenerateContent() {
           if (error instanceof Error) {
             console.log("Error: ", error.message);
           }
+          setIsGenerating(false);
           return;
         }
       }
@@ -152,6 +153,7 @@ export default function GenerateContent() {
       if (error instanceof Error) {
         console.log("Error: ", error.message);
       }
+      setIsGenerating(false);
       return;
     }
 
