@@ -76,8 +76,8 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
     
     if (item.socialMedia === "X") {
       setNumberOfTweets(item.numberOfTweets)
-    } else if (item.socialMedia === "Instagram" && item.imagePrompt !== null) {
-      const image = dataURLToImage(item.imagePrompt);
+    } else if (item.socialMedia === "Instagram") {
+      const image = item.imagePrompt === null ? null : dataURLToImage(item.imagePrompt);
       setImage(image);
     }
     setGeneratedContent(
