@@ -65,7 +65,7 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
   const hiddenFileInputRef = useRef<HTMLInputElement>(null);
   const userId = user.clerkId;
 
-  const isSubmitButtonDisabled = isGenerating || commonSettings.prompt === "" || userPoints === undefined || userPoints < POINTS_PER_GENERATION;
+  const isSubmitButtonDisabled = isGenerating || commonSettings.prompt === "" || userPoints < POINTS_PER_GENERATION;
 
   function handleHistoryItemClick(item: GeneratedContent) {
     setSelectedHistoryItem(item);
