@@ -1,5 +1,5 @@
 import { GeneratedContent, History as HistoryType } from "@/types";
-import { Clock } from "lucide-react";
+import { Clock, SearchX } from "lucide-react";
 import UserHistoryItem from "./UserHistoryItem";
 
 export type HistoryProps = {
@@ -16,9 +16,20 @@ export default function UserHistory({ history, selectedHistoryItemId, handleHist
         <Clock className="h-6 w-6 text-blue-400" />
       </div>
       <div className="space-y-4">
-        {history === undefined ? "Loading..." : history.map((item) => (
-          <UserHistoryItem key={item.id} item={item} isSelected={item.id === selectedHistoryItemId} handleHistoryItemClick={handleHistoryItemClick} />
-        ))}
+        {
+          history === undefined ? "Loading..." :
+          history.length === 0  ? (
+            <div className="text-gray-300">
+              <div className="flex justify-center mb-4">
+                <SearchX width={112} height={112} />
+              </div>
+              <span className="text-center">History is empty, start by creating content</span>
+            </div>
+          ) :
+          history.map((item) => (
+            <UserHistoryItem key={item.id} item={item} isSelected={item.id === selectedHistoryItemId} handleHistoryItemClick={handleHistoryItemClick} />
+          ))
+        }
       </div>
     </div>
   )
