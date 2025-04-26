@@ -14,11 +14,11 @@ const toneEnum = pgEnum("tone", ["Casual", "Conversational", "Humorous", "Profes
 
 export const Users = pgTable("users", {
   id: serial("id").primaryKey(),
-  clerkId: varchar("clerkId", { length: 100 }).unique(),
+  clerkId: varchar("clerkId", { length: 100 }).notNull().unique(),
   email: varchar("email", { length: 50 }).notNull().unique(),
-  name: varchar("name", { length: 50 }),
-  points: smallint("points").default(50),
-  createdAt: timestamp("created_at").defaultNow(),
+  name: varchar("name", { length: 50 }).notNull(),
+  points: smallint("points").notNull().default(50),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const GeneratedContent = pgTable("generated_content", {
