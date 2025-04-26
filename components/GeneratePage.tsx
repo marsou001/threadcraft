@@ -1,17 +1,8 @@
 "use client";
 
-import { useState, ChangeEvent, useRef, FormEvent, useReducer, SetStateAction } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Loader2,
-  Upload,
-} from "lucide-react";
+import { useState, ChangeEvent, useRef, FormEvent, useReducer } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Loader2, Upload } from "lucide-react";
 import Image from "next/image";
 import { Settings, ContentType, History, GeneratedContent, SettingsAction, SettingsActionType, SocialMedia, Tone, CommonSettings, User } from "@/types";
 import { tones } from "@/data";
