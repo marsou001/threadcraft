@@ -22,6 +22,7 @@ export type User = {
 export type GeneratedContent = {
   id: number;
   content: string;
+  userId: string;
   createdAt: Date;
 } & Settings;
 
@@ -43,7 +44,7 @@ export type CommonSettings = {
 }
 
 export type Settings =
-  CommonSettings & { socialMedia: "X" } & XSettings 
+| CommonSettings & { socialMedia: "X" } & XSettings 
 | CommonSettings & { socialMedia: "Instagram" } & InstagramSettings
 | CommonSettings & { socialMedia: "LinkedIn" } & LinkedInSettings
 
