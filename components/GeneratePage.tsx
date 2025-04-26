@@ -7,9 +7,6 @@ import Image from "next/image";
 import { Settings, ContentType, History, GeneratedContent, SettingsAction, SettingsActionType, SocialMedia, Tone, CommonSettings, User } from "@/types";
 import { tones } from "@/data";
 import { cn } from "@/lib/utils";
-import TwitterMock from "@/components/social-mocks/TwitterMock";
-import InstagramMock from "@/components/social-mocks/InstagramMock";
-import LinkedInMock from "@/components/social-mocks/LinkedInMock";
 import { generateContent } from "@/services/content";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
@@ -18,6 +15,7 @@ import dataURLToImage from "@/utils/dataURLToImage";
 import GeneratedContentDisplay from "@/components/GeneratedContentDisplay";
 import UserHistory from "@/components/UserHistory";
 import UserPoints from "@/components/UserPoints";
+import GeneratedContentPreview from "./GeneratedContentPreview";
 
 const contentTypes: ContentType[] = [
   { socialMedia: "X", label: "Twitter Thread" },
@@ -136,7 +134,7 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
       newlyGeneratedContent = await generateContent(userId!, settings);
     } catch (error) {
       if (error instanceof Error) {
-        console.log("Error: ", error.message);
+        console.log("Error", error.message);
       }
       setIsGenerating(false);
       return;
@@ -165,22 +163,6 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
     
     setIsGenerating(false);
   }
-
-
-  function renderContentMock() {
-    if (generatedContent.length === 0) return null;
-
-    switch(socialMedia) {
-      case "X":
-        return <TwitterMock content={generatedContent} />;
-      case "Instagram":
-        return <InstagramMock content={generatedContent[0]} image={image} />;
-      case "LinkedIn":
-        return <LinkedInMock content={generatedContent[0]} />;
-      default:
-        return null;
-    }
-  };
   
   return (
     <div className="grid grid-cols-1 mt-14 lg:grid-cols-3 gap-8">
@@ -352,19 +334,11 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
           </button>
         </form>
 
-        {/* Generated content display */}
         {generatedContent.length > 0 && (
-          <GeneratedContentDisplay isContentFromHistory={isContentFromHistory} socialMedia={socialMedia} generatedContent={generatedContent} />
-        )}
-
-        {/* Content preview */}
-        {generatedContent.length > 0 && (
-          <div className="bg-gray-800 p-6 rounded-2xl">
-            <h2 className="text-2xl font-semibold mb-4 text-blue-400">
-              Preview
-            </h2>
-            {renderContentMock()}
-          </div>
+          <>
+            <GeneratedContentDisplay isContentFromHistory={isContentFromHistory} socialMedia={socialMedia} generatedContent={generatedContent} />
+            <GeneratedContentPreview generatedContent={generatedContent} socialMedia={socialMedia} image={image} />
+          </>
         )}
       </div>
     </div>
