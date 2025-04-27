@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, ChangeEvent, useRef, FormEvent, useReducer } from "react";
+import { useState, ChangeEvent, useRef, FormEvent, useReducer, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Upload } from "lucide-react";
 import Image from "next/image";
@@ -16,14 +16,13 @@ import GeneratedContentDisplay from "@/components/GeneratedContentDisplay";
 import UserHistory from "@/components/UserHistory";
 import UserPoints from "@/components/UserPoints";
 import GeneratedContentPreview from "./GeneratedContentPreview";
+import { updateUserPoints } from "@/services/users";
 
 const contentTypes: ContentType[] = [
   { socialMedia: "X", label: "Twitter Thread" },
   { socialMedia: "Instagram", label: "Instagram Caption" },
   { socialMedia: "LinkedIn", label: "LinkedIn Post" },
 ];
-
-const POINTS_PER_GENERATION = 5;
 
 const initialCommonSettings: CommonSettings = {
   tone: "Casual",
@@ -53,6 +52,7 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
   const [commonSettings, dispatch] = useReducer(commonSettingsReducer, initialCommonSettings);
   const [history, setHistory] = useState<History>(userHistory);
   const [socialMedia, setSocialMedia] = useState<SocialMedia>("LinkedIn");
+  const [pointsPerGeneration, setPointsPerGeneration] = useState(3);
   const [selectedHistoryItem, setSelectedHistoryItem] = useState<GeneratedContent | null>(null);
   const [userPoints, setUserPoints] = useState<number>(user.points);
   const [numberOfTweets, setNumberOfTweets] = useState<number>(5);
@@ -65,7 +65,7 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
   const hiddenFileInputRef = useRef<HTMLInputElement>(null);
   const userId = user.clerkId;
 
-  const isSubmitButtonDisabled = isGenerating || commonSettings.prompt === "" || userPoints < POINTS_PER_GENERATION;
+  const isSubmitButtonDisabled = isGenerating || commonSettings.prompt === "" || userPoints < pointsPerGeneration;
 
   function handleHistoryItemClick(item: GeneratedContent) {
     setSelectedHistoryItem(item);
@@ -100,7 +100,7 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
     e.preventDefault();
     
     if (userPoints === undefined || userPoints < 5) {
-      console.log("Not enough points");
+      alert("Not enough points");
       // Maybe redirect to pricing page?
       return;
     }
@@ -150,19 +150,38 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
     setHistory((history) => [newlyGeneratedContent, ...history!]);
     setSelectedHistoryItem(newlyGeneratedContent);
     setIsContentFromHistory(false);
+
     // Update user points
-    // const newUserPoints = userPoints - POINTS_PER_GENERATION;
-    // try {
-    //   await updateUserPoints(userId!, newUserPoints);
-    //   setUserPoints(newUserPoints)
-    // } catch (error) {
-    //   if (error instanceof Error) {
-    //     console.log("error: ", error.message);
-    //   }
-    // }
+    const newUserPoints = userPoints - pointsPerGeneration;
+
+    try {
+      await updateUserPoints(userId, newUserPoints);
+      setUserPoints(newUserPoints)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log("error: ", error.message);
+      }
+    }
     
     setIsGenerating(false);
   }
+
+  useEffect(() => {
+    switch(socialMedia) {
+      case "X":
+        setPointsPerGeneration(numberOfTweets);
+        break;
+      case "Instagram":
+        setPointsPerGeneration(shouldAddAIDescription ? 6 : 3);
+        break;
+      case "LinkedIn":
+        setPointsPerGeneration(3);
+        break;
+      default:
+        setPointsPerGeneration(3);
+        break;
+    }
+  }, [socialMedia, numberOfTweets, shouldAddAIDescription]);
   
   return (
     <div className="grid grid-cols-1 mt-14 lg:grid-cols-3 gap-8">
@@ -329,7 +348,7 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
                 Generating...
               </>
             ) : (
-              `Generate Content (${POINTS_PER_GENERATION} points)`
+              `Generate Content (${pointsPerGeneration} points)`
             )}
           </button>
         </form>
