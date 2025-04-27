@@ -1,12 +1,12 @@
-import GeneratePage from "@/components/GeneratePage";
+import { auth } from "@clerk/nextjs/server";
 import { getUserByClerkId, getAllGeneratedContentForUser } from "@/drizzle/db/actions"
 import { History, User } from "@/types";
-import { auth } from "@clerk/nextjs/server";
+import GeneratePage from "@/components/GeneratePage";
 
 export default async function Generate() {
   const { userId, redirectToSignIn } = await auth();
-
   if (userId === null) return redirectToSignIn();
+
   let user: User, history: History;
 
   try {

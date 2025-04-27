@@ -1,13 +1,4 @@
-import { integer } from "drizzle-orm/gel-core";
-import {
-  pgTable,
-  serial,
-  text,
-  timestamp,
-  varchar,
-  pgEnum,
-  smallint,
-} from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, varchar, pgEnum, smallint } from "drizzle-orm/pg-core";
 
 const socialMediaEnum = pgEnum("social_media", ["X", "Instagram", "LinkedIn"]);
 const toneEnum = pgEnum("tone", ["Casual", "Conversational", "Humorous", "Professional", "Empathetic", "Enthusiastic", "Authoritative", "Serious", "Neutral", "Joyful", "Friendly", "Encouraging"]);
