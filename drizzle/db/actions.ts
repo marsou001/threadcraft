@@ -111,62 +111,29 @@ export async function saveGeneratedContent(
 
 export async function getAllGeneratedContentForUser(userId: string): Promise<History> {
   console.log("Fetching content for user", userId);
-// TODO: use join
+
   const allGeneratedContent = await db
     .select()
     .from(GeneratedContent)
+    .leftJoin(XSettings, and(eq(GeneratedContent.id, XSettings.generatedContentId), eq(GeneratedContent.socialMedia, "X")))
+    .leftJoin(InstagramSettings, and(eq(GeneratedContent.id, InstagramSettings.generatedContentId), eq(GeneratedContent.socialMedia, "Instagram")))
+    .leftJoin(LinkedInSettings, and(eq(GeneratedContent.id, LinkedInSettings.generatedContentId), eq(GeneratedContent.socialMedia, "LinkedIn")))
     .where(eq(GeneratedContent.userId, userId))
     .orderBy(desc(GeneratedContent.createdAt))
     .execute();
 
-  const allGeneratedContentWithCustomSettings = await Promise.all(allGeneratedContent.map(async (content) => {
-    switch (content.socialMedia) {
+  const formatedContent = allGeneratedContent.map((content) => {
+    switch(content.generated_content.socialMedia) {
       case "X":
-        const XSettings = await getXSettingsForXContent(content.id);
-        return { ...content, socialMedia: "X" as const, ...XSettings }
+        return {...content.generated_content, socialMedia: "X" as const, ...content.x_settings! }
       case "Instagram":
-        const InstagramSettings = await getInstagramSettingsForInstagramContent(content.id);
-        return { ...content, socialMedia: "Instagram" as const, ...InstagramSettings }
+        return {...content.generated_content, socialMedia: "Instagram" as const, ...content.instagram_settings! }
       case "LinkedIn":
-        const LinkedInSettings = await getLinkedInSettingsForLinkedInContent(content.id);
-        return { ...content, socialMedia: "LinkedIn" as const, ...LinkedInSettings }
+        return {...content.generated_content, socialMedia: "LinkedIn" as const, ...content.linkedin_settings! }
+      default:
+        return {...content.generated_content, socialMedia: "LinkedIn" as const, ...content.linkedin_settings! }
     }
-  }))
-  return allGeneratedContentWithCustomSettings;
-}
+  })
 
-async function getXSettingsForXContent(id: number) {
-  console.log("Fetching X settings for content", id);
-
-  const [settings] = await db
-    .select()
-    .from(XSettings)
-    .where(eq(XSettings.generatedContentId, id))
-    .execute()
-  const { generatedContentId, ...rest } = settings;
-  return rest;
-}
-
-async function getInstagramSettingsForInstagramContent(id: number) {
-  console.log("Fetching Instagram settings for content", id);
-
-  const [settings] = await db
-    .select()
-    .from(InstagramSettings)
-    .where(eq(InstagramSettings.generatedContentId, id))
-    .execute()
-  const { generatedContentId, ...rest } = settings;
-  return rest;
-}
-
-async function getLinkedInSettingsForLinkedInContent(id: number) {
-  console.log("Fetching LinkedIn settings for content", id);
-
-  const [settings] = await db
-    .select()
-    .from(LinkedInSettings)
-    .where(eq(LinkedInSettings.generatedContentId, id))
-    .execute()
-  const { generatedContentId, ...rest } = settings;
-  return rest;
+  return formatedContent;
 }
