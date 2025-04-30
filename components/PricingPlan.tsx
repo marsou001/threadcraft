@@ -7,6 +7,7 @@ import { EnterprisePlan, Plan } from "@/types";
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createCheckoutSession } from "@/services/subscriptions";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 // TODO: fetch pricing plans from server
@@ -28,18 +29,7 @@ export default function PricingPlan(props: Plan | EnterprisePlan) {
     setIsProcessingSubscription(true);
 
     try {
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId, priceId }),
-      })
-      
-      const { sessionId: checkoutSessionId } = await response.json();
-      sessionId = checkoutSessionId as string;
-      // handle subscription
-      console.log("handling subscription")
+      sessionId = await createCheckoutSession(userId!, priceId)
     } catch (error) {
       // TODO: handle error
       console.log(error);
@@ -49,7 +39,6 @@ export default function PricingPlan(props: Plan | EnterprisePlan) {
     }
     
     const result = await stripe.redirectToCheckout({ sessionId });
-
     if (result.error) {
       console.error(result.error);
     }
