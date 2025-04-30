@@ -42,6 +42,9 @@ function SignUpPage() {
             otpCodeFieldInput: {
               backgroundColor: "white"
             },
+            formFieldLabel: {
+              color: "white",
+            },
             formFieldInput: {
               padding: "10px",
             },

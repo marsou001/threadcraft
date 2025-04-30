@@ -42,6 +42,9 @@ function SignInPage() {
             formFieldInput: {
               padding: "10px",
             },
+            formFieldLabel: {
+              color: "white",
+            },
             formButtonPrimary: {
               fontSize: "1rem",
               backgroundColor: "oklch(0.546 0.245 262.881)",
