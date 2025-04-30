@@ -74,7 +74,7 @@ export default function PricingPlan(props: Plan | EnterprisePlan) {
         disabled={isProcessingSubscription || props.name === "Enterprise"}
         className={cn("text-black text-sm w-full rounded-sm py-2", {
           "bg-white hover:bg-gray-200 cursor-pointer": props.name !== "Enterprise",
-          "bg-gray-400 cursor-not-allowed": props.name === "Enterprise" 
+          "bg-gray-400 hover:bg-gray-400 cursor-not-allowed": props.name === "Enterprise" || isProcessingSubscription,
         })}
       >
         {

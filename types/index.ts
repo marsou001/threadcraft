@@ -1,18 +1,39 @@
-export type PricingPlan = "Basic" | "Pro" | "Enterprise";
+export type PricingPlan = "Basic" | "Pro";
 export type SocialMedia = "X" | "Instagram" | "LinkedIn";
 export type Tone = "Casual" | "Conversational" | "Humorous" | "Professional" | "Empathetic" | "Enthusiastic" | "Authoritative" | "Serious" | "Neutral" | "Joyful" | "Friendly" | "Encouraging";
 export type History = GeneratedContent[];
 
 export type Plan = {
   name: PricingPlan;
-  price: number | "Custom";
-  priceId: string | null;
+  price: number;
+  priceId: string;
+  points: number;
   features: string[];
+}
+
+export type EnterprisePlan = {
+  name: "Enterprise";
+  price: number;
+  priceId: null;
+  points: number;
+  features: string[];
+}
+
+export type Subscription = {
+  id: number;
+  subcriptionId: string;
+  userId: string;
+  isActive: boolean;
+  plan: PricingPlan;
+  currentPeriodStart: Date;
+  currentPeriodEnd: Date;
+  cancelAtPeriodEnd: boolean;
 }
 
 export type User = {
   id: number;
   clerkId: string;
+  stripeCustomerId: string | null;
   email: string;
   name: string;
   points: number;

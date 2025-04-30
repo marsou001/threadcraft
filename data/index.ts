@@ -1,4 +1,4 @@
-import { Plan, Tone } from "@/types";
+import { EnterprisePlan, Plan, Tone } from "@/types";
 
 export const features = [
   {
@@ -30,14 +30,15 @@ export const benefits = [
   "Scale your social media presence effortlessly",
 ];
 
-export const pricingPlans: Plan[] = [
+export const pricingPlans: [...Plan[], EnterprisePlan] = [
   {
     name: "Basic",
     price: 9,
     priceId: process.env.PRICE_ID_BASIC!,
+    points: 200,
     features: [
-      "100 AI-generated posts per month",
-      "Twitter thread generation",
+      "200 AI-generation points per month",
+      "All social media platforms",
       "Basic analytics",
     ],
   },
@@ -45,19 +46,21 @@ export const pricingPlans: Plan[] = [
     name: "Pro",
     price: 29,
     priceId: process.env.PRICE_ID_PRO!,
+    points: 500,
     features: [
-      "500 AI-generated posts per month",
-      "Twitter, Instagram, and LinkedIn content",
+      "500 AI-generation points per month",
+      "All social media platforms",
       "Advanced analytics",
       "Priority support",
     ],
   },
   {
     name: "Enterprise",
-    price: "Custom",
+    price: 79,
     priceId: null,
+    points: 33,
     features: [
-      "Unlimited AI-generated posts",
+      "Unlimited AI-generation points",
       "All social media platforms",
       "Custom AI model training", 
       "Dedicated account manager",

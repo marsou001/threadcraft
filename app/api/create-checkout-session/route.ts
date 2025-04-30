@@ -1,3 +1,4 @@
+import { setStripeCustomerId } from "@/drizzle/db/actions";
 import { headers } from "next/headers";
 import Stripe from "stripe";
 
@@ -13,9 +14,10 @@ export async function POST(req: Request) {
   // Get headers
   const headerPayload = await headers();
   const origin = headerPayload.get("origin");
-
+  let session: Stripe.Response<Stripe.Checkout.Session>;
+  
   try {
-    const session = await stripe.checkout.sessions.create({
+    session = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
       line_items: [
@@ -28,10 +30,10 @@ export async function POST(req: Request) {
       cancel_url: `${origin}/pricing`,
       client_reference_id: userId,
     });
-
-    return Response.json({ sessionId: session.id });
   } catch (error) {
     console.error(error);
-    return Response.json({ error: "Error creating checkout session" }, { status: 502 });
+    return new Response("Error creating checkout session", { status: 502 });
   }
+  
+  return Response.json({ sessionId: session.id });
 }

@@ -1,7 +1,7 @@
 import { db } from ".";
-import { GeneratedContent, InstagramSettings, LinkedInSettings, Users, XSettings } from "./schema";
-import { desc, eq } from "drizzle-orm";
-import type { GeneratedContent as Content, History, Settings } from "@/types";
+import { GeneratedContent, InstagramSettings, LinkedInSettings, Subscriptions, Users, XSettings } from "./schema";
+import { and, desc, eq } from "drizzle-orm";
+import type { GeneratedContent as Content, History, Settings, Subscription, User } from "@/types";
 
 export async function createUser(clerkId: string, email: string, name: string) {
   console.log("Creating user ", clerkId, email, name);
@@ -58,7 +58,19 @@ export async function getUserPoints(userId: string) {
     .limit(1)
     .execute()
   return user.points;
-} 
+}
+
+export async function updateUser(userId: string, values: Partial<User>) {
+  console.log("Updating user", userId);
+
+  const [user] = await db
+    .update(Users)
+    .set(values)
+    .where(eq(Users.clerkId, userId))
+    .returning()
+    .execute()
+  return user;
+}
 
 export async function updateUserPoints(userId: string, newPoints: number) {
   console.log("Updating points for user", userId);
@@ -70,6 +82,30 @@ export async function updateUserPoints(userId: string, newPoints: number) {
     .returning()
     .execute()
   return user.points;
+}
+
+export async function setStripeCustomerId(userId: string, stripeCustomerId: string) {
+  console.log("Setting Stripe customer id for user", userId);
+
+  const [user] = await db
+    .update(Users)
+    .set({ stripeCustomerId })
+    .where(eq(Users.clerkId, userId))
+    .returning()
+    .execute()
+  return user;
+}
+
+export async function createSubscription(subscription: Omit<Subscription, "id" | "isActive" | "cancelAtPeriodEnd">) {
+  console.log("Creating subscription for user", subscription.userId);
+
+  const [newSubscription] = await db
+    .insert(Subscriptions)
+    .values(subscription)
+    .returning()
+    .execute();
+
+  return newSubscription;
 }
 
 export async function saveGeneratedContent(

@@ -1,16 +1,32 @@
-import { pgTable, serial, text, timestamp, varchar, pgEnum, smallint } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, varchar, pgEnum, smallint, boolean } from "drizzle-orm/pg-core";
 
 const socialMediaEnum = pgEnum("social_media", ["X", "Instagram", "LinkedIn"]);
+const planEnum = pgEnum("plan", ["Basic", "Pro"])
 const toneEnum = pgEnum("tone", ["Casual", "Conversational", "Humorous", "Professional", "Empathetic", "Enthusiastic", "Authoritative", "Serious", "Neutral", "Joyful", "Friendly", "Encouraging"]);
 
 export const Users = pgTable("users", {
   id: serial("id").primaryKey(),
   clerkId: varchar("clerkId", { length: 100 }).notNull().unique(),
+  stripeCustomerId: varchar("stripe_customer_id", { length: 100 }).unique(),
   email: varchar("email", { length: 50 }).notNull().unique(),
   name: varchar("name", { length: 50 }).notNull(),
   points: smallint("points").notNull().default(50),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+export const Subscriptions = pgTable("subscriptions", {
+  id: serial("id").primaryKey(),
+  subcriptionId: varchar("susbscription_id", { length: 50 }).notNull().unique(),
+  userId: varchar("clerkId", { length: 100 })
+    .references(() => Users.clerkId)
+    .notNull()
+    .unique(),
+  isActive: boolean("is_active").default(true).notNull(),
+  plan: planEnum("plan").notNull(),
+  currentPeriodStart: timestamp("current_period_start").notNull(),
+  currentPeriodEnd: timestamp("current_period_end").notNull(),
+  cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull().default(false),
+})
 
 export const GeneratedContent = pgTable("generated_content", {
   id: serial("id").primaryKey(),
