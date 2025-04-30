@@ -3,13 +3,14 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { Plan } from "@/types";
+import { EnterprisePlan, Plan } from "@/types";
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 // TODO: fetch pricing plans from server
-export default function PricingPlan(props: Plan) {
+export default function PricingPlan(props: Plan | EnterprisePlan) {
   const [isProcessingSubscription, setIsProcessingSubscription] = useState(false);
   const router = useRouter();
   const { userId } = useAuth();
@@ -81,10 +82,16 @@ export default function PricingPlan(props: Plan) {
       </ul>
       <button
         onClick={() => props.priceId && handleSubscribe(props.priceId)}
-        disabled={isProcessingSubscription || !props.priceId}
-        className="text-black bg-white hover:bg-gray-200 text-sm w-full rounded-sm py-2 cursor-pointer"
+        disabled={isProcessingSubscription || props.name === "Enterprise"}
+        className={cn("text-black text-sm w-full rounded-sm py-2", {
+          "bg-white hover:bg-gray-200 cursor-pointer": props.name !== "Enterprise",
+          "bg-gray-400 cursor-not-allowed": props.name === "Enterprise" 
+        })}
       >
-        { isProcessingSubscription ? "Processing..." : "Choose Plan" }
+        {
+          props.name === "Enterprise" ? "Coming Soon..." :
+          isProcessingSubscription ? "Processing..." : "Choose Plan"
+         }
       </button>
     </div>
   );
