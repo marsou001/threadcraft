@@ -1,27 +1,20 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useAuth } from "@clerk/nextjs";
 import { EnterprisePlan, Plan } from "@/types";
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createCheckoutSession } from "@/services/subscriptions";
+import useUser from "@/hooks/useUser";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 // TODO: fetch pricing plans from server
 export default function PricingPlan(props: Plan | EnterprisePlan) {
   const [isProcessingSubscription, setIsProcessingSubscription] = useState(false);
-  const router = useRouter();
-  const { userId } = useAuth();
+  const user = useUser();
 
   async function handleSubscribe(priceId: string) {
-    if (userId === null) {
-      router.push("/sign-up");
-      return;
-    }
-    
     const stripe = await stripePromise;
     if (stripe === null) return;
 
@@ -29,7 +22,7 @@ export default function PricingPlan(props: Plan | EnterprisePlan) {
     setIsProcessingSubscription(true);
 
     try {
-      sessionId = await createCheckoutSession(userId!, priceId)
+      sessionId = await createCheckoutSession(user.clerkId, priceId)
     } catch (error) {
       // TODO: handle error
       console.log(error);
