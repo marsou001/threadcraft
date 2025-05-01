@@ -1,8 +1,8 @@
 import type { PricingPlan } from "@/types";
 import { getUserPlan as getPlan } from "@/drizzle/db/actions";
 
-export default async function getUserPlan(userId: string): Promise<PricingPlan> {
-  let plan: PricingPlan;
+export default async function getUserPlan(userId: string): Promise<PricingPlan | null> {
+  let plan: PricingPlan | undefined;
 
   try {
     plan = await getPlan(userId);
@@ -13,5 +13,5 @@ export default async function getUserPlan(userId: string): Promise<PricingPlan> 
     throw new Error("Error fetching user plan");
   }
 
-  return plan;
+  return typeof plan === "undefined" ? null : plan;
 }

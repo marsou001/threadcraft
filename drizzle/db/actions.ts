@@ -60,7 +60,7 @@ export async function getUserPoints(userId: string) {
   return user.points;
 }
 
-export async function getUserPlan(userId: string): Promise<PricingPlan> {
+export async function getUserPlan(userId: string): Promise<PricingPlan | undefined> {
   console.log("Fetching plan for user", userId);
 
   const [subscription] = await db
@@ -69,7 +69,7 @@ export async function getUserPlan(userId: string): Promise<PricingPlan> {
     .where(eq(Subscriptions.userId, userId))
     .limit(1)
     .execute()
-  return subscription.plan;
+  return subscription?.plan;
 }
 
 export async function updateUser(userId: string, values: Partial<User>) {
