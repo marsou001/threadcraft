@@ -1,18 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { EnterprisePlan, Plan } from "@/types";
+import type { EnterprisePlan, Plan } from "@/types";
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createCheckoutSession } from "@/services/subscriptions";
-import useUser from "@/hooks/useUser";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 // TODO: fetch pricing plans from server
-export default function PricingPlan(props: Plan | EnterprisePlan) {
+export type PricingPlanProps = {
+  plan: Plan | EnterprisePlan;
+  userId: string;
+}
+
+export default function PricingPlan({ plan, userId }: PricingPlanProps) {
   const [isProcessingSubscription, setIsProcessingSubscription] = useState(false);
-  const user = useUser();
 
   async function handleSubscribe(priceId: string) {
     const stripe = await stripePromise;
@@ -22,7 +25,7 @@ export default function PricingPlan(props: Plan | EnterprisePlan) {
     setIsProcessingSubscription(true);
 
     try {
-      sessionId = await createCheckoutSession(user.clerkId, priceId)
+      sessionId = await createCheckoutSession(userId, priceId)
     } catch (error) {
       // TODO: handle error
       console.log(error);
@@ -39,20 +42,20 @@ export default function PricingPlan(props: Plan | EnterprisePlan) {
 
   return (
     <div
-      key={props.name}
+      key={plan.name}
       className="tracking-wide flex flex-col p-8 border border-gray-800 rounded-lg"
     >
       <h2 className="text-white text-2xl font-bold mb-4">
-        {props.name}
+        {plan.name}
       </h2>
       <p className="text-white text-4xl font-bold mb-6">
-        ${props.price}
+        ${plan.price}
         <span className="text-gray-400 text-lg font-normal">
           /month
         </span>
       </p>
       <ul className="grow mb-8">
-        {props.features.map((feature, featureIndex) => (
+        {plan.features.map((feature, featureIndex) => (
           <li
             key={featureIndex}
             className="text-gray-300 flex items-center mb-3"
@@ -63,15 +66,15 @@ export default function PricingPlan(props: Plan | EnterprisePlan) {
         ))}
       </ul>
       <button
-        onClick={() => props.priceId && handleSubscribe(props.priceId)}
-        disabled={isProcessingSubscription || props.name === "Enterprise"}
+        onClick={() => plan.priceId && handleSubscribe(plan.priceId)}
+        disabled={isProcessingSubscription || plan.name === "Enterprise"}
         className={cn("text-black text-sm w-full rounded-sm py-2", {
-          "bg-white hover:bg-gray-200 cursor-pointer": props.name !== "Enterprise",
-          "bg-gray-400 hover:bg-gray-400 cursor-not-allowed": props.name === "Enterprise" || isProcessingSubscription,
+          "bg-white hover:bg-gray-200 cursor-pointer": plan.name !== "Enterprise",
+          "bg-gray-400 hover:bg-gray-400 cursor-not-allowed": plan.name === "Enterprise" || isProcessingSubscription,
         })}
       >
         {
-          props.name === "Enterprise" ? "Coming Soon..." :
+          plan.name === "Enterprise" ? "Coming Soon..." :
           isProcessingSubscription ? "Processing..." : "Choose Plan"
          }
       </button>

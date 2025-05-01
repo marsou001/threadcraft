@@ -1,7 +1,10 @@
 import { pricingPlans } from "@/data";
+import { getCurrentUser } from "@/lib/current-user";
 import PricingPlan from "@/components/PricingPlan";
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const user = await getCurrentUser();
+
   return (
     <main className="text-gray-100 bg-black">
       <div className="container mx-auto py-20">
@@ -10,7 +13,7 @@ export default function PricingPage() {
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {pricingPlans.map((plan) => (
-            <PricingPlan key={plan.name} {...plan} />
+            <PricingPlan key={plan.name} plan={plan} userId={user.clerkId} />
           ))}
         </div>
       </div>

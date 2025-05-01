@@ -26,7 +26,7 @@ export async function getUser(id: number) {
   return user;
 }
 
-export async function getUserByClerkId(userId: string) {
+export async function getUserByClerkId(userId: string): Promise<User> {
   console.log("Fetching user by Clerk id", userId);
 
   const [user] = await db

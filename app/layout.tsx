@@ -1,12 +1,8 @@
 import type { Metadata } from "next";
-import { auth } from "@clerk/nextjs/server";
 import { Inter } from "next/font/google";
-import type { User } from "@/types";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Navbar } from "@/components/Navbar";
 import "./globals.css";
-import AuthContext from "@/components/AuthContext";
-import { getUserByClerkId } from "@/drizzle/db/actions";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,29 +16,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { userId, redirectToSignIn } = await auth();
-  if (userId === null) return redirectToSignIn();
-
-  let user: User;
-
-  try {
-    user = await getUserByClerkId(userId);
-  } catch (error) {
-    if (error instanceof Error) console.log("Error fetching user data", error.message);
-    // TODO: create a dedicated error page
-    return <div>Something went wrong</div>
-  }
-
   return (
     <html lang="en">
       <body
         className={`${inter.className} antialiased`}
       >
         <ClerkProvider>
-          <AuthContext user={user}>
             <Navbar />
             {children}
-          </AuthContext>
         </ClerkProvider>
       </body>
     </html>

@@ -1,23 +1,14 @@
-import { auth } from "@clerk/nextjs/server";
-import { getUserByClerkId, getAllGeneratedContentForUser } from "@/drizzle/db/actions"
-import { History, User } from "@/types";
+import { getAllGeneratedContentForUser } from "@/drizzle/db/actions"
+import type { History } from "@/types";
 import GeneratePage from "@/components/GeneratePage";
+import { getCurrentUser } from "@/lib/current-user";
 
 export default async function Generate() {
-  const { userId, redirectToSignIn } = await auth();
-  if (userId === null) return redirectToSignIn();
-
-  let user: User, history: History;
-
+  const user = await getCurrentUser();
+  let history: History;
+  
   try {
-    user = await getUserByClerkId(userId);
-  } catch (error) {
-    if (error instanceof Error) console.log("Error fetching user data", error.message);
-    return <div>Something went wrong</div>
-  }
-
-  try {
-    history = await getAllGeneratedContentForUser(userId);
+    history = await getAllGeneratedContentForUser(user.clerkId);
   } catch (error) {
     if (error instanceof Error) console.log("Error fetching user history", error.message);
     return <div>Something went wrong</div>
