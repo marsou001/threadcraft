@@ -1,7 +1,7 @@
 import { db } from ".";
 import { GeneratedContent, InstagramSettings, LinkedInSettings, Subscriptions, Users, XSettings } from "./schema";
 import { and, desc, eq } from "drizzle-orm";
-import type { GeneratedContent as Content, History, Settings, Subscription, User } from "@/types";
+import type { GeneratedContent as Content, History, PricingPlan, Settings, Subscription, User } from "@/types";
 
 export async function createUser(clerkId: string, email: string, name: string) {
   console.log("Creating user ", clerkId, email, name);
@@ -58,6 +58,18 @@ export async function getUserPoints(userId: string) {
     .limit(1)
     .execute()
   return user.points;
+}
+
+export async function getUserPlan(userId: string): Promise<PricingPlan> {
+  console.log("Fetching plan for user", userId);
+
+  const [subscription] = await db
+    .select({ plan: Subscriptions.plan })
+    .from(Subscriptions)
+    .where(eq(Subscriptions.userId, userId))
+    .limit(1)
+    .execute()
+  return subscription.plan;
 }
 
 export async function updateUser(userId: string, values: Partial<User>) {

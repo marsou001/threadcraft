@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { EnterprisePlan, Plan } from "@/types";
+import type { EnterprisePlan, Plan, PricingPlan } from "@/types";
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,11 +10,12 @@ import { createCheckoutSession } from "@/services/subscriptions";
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 // TODO: fetch pricing plans from server
 export type PricingPlanProps = {
-  plan: Plan | EnterprisePlan;
   userId: string;
+  plan: Plan | EnterprisePlan;
+  isUserPlan: boolean;
 }
 
-export default function PricingPlan({ plan, userId }: PricingPlanProps) {
+export default function PricingPlan({ plan, userId, isUserPlan }: PricingPlanProps) {
   const [isProcessingSubscription, setIsProcessingSubscription] = useState(false);
 
   async function handleSubscribe(priceId: string) {
@@ -75,6 +76,7 @@ export default function PricingPlan({ plan, userId }: PricingPlanProps) {
       >
         {
           plan.name === "Enterprise" ? "Coming Soon..." :
+          isUserPlan ? "Cancel Plan" :
           isProcessingSubscription ? "Processing..." : "Choose Plan"
          }
       </button>
