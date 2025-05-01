@@ -86,6 +86,18 @@ export type SettingsAction = {
   payload: number;
 };
 
+export type CreateCheckoutSessionParams = {
+  userHasCustomerId: true,
+  userId: string;
+  priceId: string;
+  customerId: string;
+} | {
+  userHasCustomerId: false,
+  userId: string;
+  priceId: string;
+  customerEmail: string;
+}
+
 type XSettings = {
   numberOfTweets: number;
 };

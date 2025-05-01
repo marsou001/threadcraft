@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { EnterprisePlan, Plan, PricingPlan } from "@/types";
+import type { CreateCheckoutSessionParams, EnterprisePlan, Plan, PricingPlan, User } from "@/types";
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,12 +10,12 @@ import { createCheckoutSession } from "@/services/subscriptions";
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 // TODO: fetch pricing plans from server
 export type PricingPlanProps = {
-  userId: string;
+  user: User;
   plan: Plan | EnterprisePlan;
   isUserPlan: boolean;
 }
 
-export default function PricingPlan({ plan, userId, isUserPlan }: PricingPlanProps) {
+export default function PricingPlan({ plan, user, isUserPlan }: PricingPlanProps) {
   const [isProcessingSubscription, setIsProcessingSubscription] = useState(false);
 
   async function handleSubscribe(priceId: string) {
@@ -25,8 +25,15 @@ export default function PricingPlan({ plan, userId, isUserPlan }: PricingPlanPro
     let sessionId: string;
     setIsProcessingSubscription(true);
 
+    const createCheckoutSessionParams = { userId: user.clerkId, priceId, userHasCustomerId: user.stripeCustomerId !== null } as CreateCheckoutSessionParams;
+    if (createCheckoutSessionParams.userHasCustomerId === true) {
+      createCheckoutSessionParams.customerId = user.stripeCustomerId!;
+    } else {
+      createCheckoutSessionParams.customerEmail = user.email;
+    }
+console.log("createCheckoutSessionParams", createCheckoutSessionParams)
     try {
-      sessionId = await createCheckoutSession(userId, priceId)
+      sessionId = await createCheckoutSession(createCheckoutSessionParams);
     } catch (error) {
       // TODO: handle error
       console.log(error);

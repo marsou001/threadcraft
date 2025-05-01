@@ -1,10 +1,19 @@
-export async function createCheckoutSession(userId: string, priceId: string): Promise<string> {
+import { CreateCheckoutSessionParams } from "@/types";
+
+export async function createCheckoutSession(params: CreateCheckoutSessionParams): Promise<string> {
+  const body = {
+    userId: params.userId,
+    priceId: params.priceId,
+    customerId: params.userHasCustomerId ? params.customerId : null,
+    customerEmail: !params.userHasCustomerId ? params.customerEmail : null,
+  };
+
   const response = await fetch('/api/create-checkout-session', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ userId, priceId }),
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {

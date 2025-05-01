@@ -48,6 +48,16 @@ export async function getUsersByEmail(email: string) {
   return users;
 }
 
+export async function getUserByStripeCustomerId(customerId: string) {
+  const [user] = await db
+    .select()
+    .from(Users)
+    .where(eq(Users.stripeCustomerId, customerId))
+    .limit(1)
+    .execute();
+  return user;
+}
+
 export async function getUserPoints(userId: string) {
   console.log("Fetching points for user", userId);
 
@@ -118,6 +128,18 @@ export async function createSubscription(subscription: Omit<Subscription, "id" |
     .execute();
 
   return newSubscription;
+}
+
+export async function updateSubscription(subscriptionId: number, values: Partial<Omit<Subscription, "id" | "userId">>) {
+  console.log("Update subscription", subscriptionId);
+
+  const [updatedSubscription] = await db
+    .update(Subscriptions)
+    .set(values)
+    .where(eq(Subscriptions.id, subscriptionId))
+    .returning()
+    .execute()
+  return updatedSubscription;
 }
 
 export async function saveGeneratedContent(

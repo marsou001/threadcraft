@@ -1,12 +1,12 @@
 import Stripe from "stripe";
 import { headers } from "next/headers";
 import { pricingPlans } from "@/data";
-import { createSubscription, updateUser, updateUserPoints } from "@/drizzle/db/actions";
+import { createSubscription, getUserByStripeCustomerId, updateSubscription, updateUser, updateUserPoints } from "@/drizzle/db/actions";
+import waitForUserByCustomerId from "@/lib/wait-for-user-by-customer-id";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: Request) {
-  console.log("Is webhook listening...?")
   const headerPayload = await headers();
   const sig = headerPayload.get('stripe-signature');
   
@@ -34,70 +34,86 @@ export async function POST(req: Request) {
 
   switch(event.type) {
     case "checkout.session.completed":
-      const session = event.data.object;
-      const userId = session.client_reference_id;
+      const checkout = event.data.object;
+      const userId = checkout.client_reference_id;
 
       if (userId === null) {
         console.error("No user was attached to the session");
         return new Response("Invalid session data", { status: 400 });
       }
-      
-      if (session.subscription === null) {
-        console.error("This is not a subscription checkout!", session.id);
-        return new Response("Invalid session data", { status: 400 });
-      }
 
-      const subscription = typeof session.subscription === "string"
-        ? await stripe.subscriptions.retrieve(session.subscription)
-        : session.subscription;
-
-      console.log("Retrieved subscription", subscription);
-
-      if (subscription.items.data.length === 0) {
-        console.error("No items found in subscription", subscription);
-        return new Response("Invalid subscription data", { status: 400 });
-      }
-
-      const priceId = subscription.items.data[0].price.id;
-      console.log("Price id", priceId);
-      
-      const plan = pricingPlans.find((plan) => plan.priceId === priceId);
-      if (plan === undefined || plan.priceId === null) {
-        console.error("No plan found with price id", priceId);
-        return new Response("No plan found", { status: 404 });
-      }
-
-      await createSubscription({
-        userId,
-        subcriptionId: subscription.id,
-        plan: plan.name,
-        currentPeriodStart: new Date(subscription.items.data[0].current_period_start * 1000),
-        currentPeriodEnd: new Date(subscription.items.data[0].current_period_end * 1000),
-      });
-
-      // Setting user customer id and points
-      if (session.customer === null) {
+      // Setting user customer id
+      if (checkout.customer === null) {
         return new Response("Error getting customer id", { status: 502 });
       }
 
-      const stripeCustomerId = typeof session.customer === "string"
-        ? session.customer
-        : session.customer.id;
+      const stripeCustomerId = typeof checkout.customer === "string"
+        ? checkout.customer
+        : checkout.customer.id;
 
       try {
-        await updateUser(userId, { stripeCustomerId, points: plan.points });
+        const user = await updateUser(userId, { stripeCustomerId });
+        console.log("user after update", user)
       } catch (error) {
         console.error(error);
         return new Response("Error updating user", { status: 500 });
       }
       break;
-    case "payment_intent.succeeded":
-      const paymentIntentPaymentSucceeded = event.data.object;
-      console.log("Event:", "payment_intent.succeeded")
+    case "customer.subscription.created":
+      const subscription = event.data.object;
+      const priceId = subscription.items.data[0].price.id;
+      console.log("Price id", priceId);
+
+      const plan = pricingPlans.find((plan) => plan.priceId === priceId);
+      // Plan must not be Enterprise. Leave that to later
+      if (plan === undefined || plan.priceId === null) {
+        console.error("No plan found with price id", priceId);
+        return new Response("No plan found", { status: 404 });
+      }
+
+      const customerId = typeof subscription.customer === "string"
+        ? subscription.customer
+        : subscription.customer.id;
+      const { clerkId } = await waitForUserByCustomerId(customerId);
+      await createSubscription({
+        userId: clerkId,
+        subcriptionId: subscription.id,
+        plan: plan.name,
+        currentPeriodStart: new Date(subscription.items.data[0].current_period_start * 1000),
+        currentPeriodEnd: new Date(subscription.items.data[0].current_period_end * 1000),
+      })
       break;
-    case "payment_intent.payment_failed":
-      const paymentIntentPaymentFailed = event.data.object;
-      console.log("Event:", "payment_intent.payment_failed");
+    case "customer.subscription.updated":
+    case "invoice.paid":
+      console.log("Event:", "invoice.paid");
+      const invoicePaid = event.data.object as Stripe.Invoice;
+      if (invoicePaid.customer === null) {
+        return new Response("Error getting customer id", { status: 502 });
+      }
+      
+      const id = typeof invoicePaid.customer === "string"
+        ? invoicePaid.customer
+        : invoicePaid.customer.id;
+      console.log("id", id)
+      const user = await waitForUserByCustomerId(id);
+      if (!user) {
+        console.error("No user found for Stripe customer ID:", id);
+        return new Response("User not found", { status: 404 });
+      }
+
+      const invoicePriceId = invoicePaid.lines.data[0].pricing?.price_details?.price!;
+      const plann = pricingPlans.find((plan) => plan.priceId === invoicePriceId);
+      // Plan must not be Enterprise. Leave that to later
+      if (plann === undefined || plann.priceId === null) {
+        console.error("No plan found with price id", invoicePriceId);
+        return new Response("No plan found", { status: 404 });
+      }
+
+      await updateUser(user.clerkId, { points: plann.points });
+      break;
+    case "invoice.payment_failed":
+      const invoicePaymentFailed = event.data.object;
+      console.log("Event:", "invoice.payment_failed");
       break;
     }
   return new Response('Webhook received', { status: 200 });
