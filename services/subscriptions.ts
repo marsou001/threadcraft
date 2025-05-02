@@ -24,3 +24,19 @@ export async function createCheckoutSession(params: CreateCheckoutSessionParams)
   const { sessionId } = await response.json();
   return sessionId;
 }
+
+export async function createPortalSession(customerId: string): Promise<string> {
+  const response = await fetch("/api/create-portal-session", {
+    method: "POST",
+    body: JSON.stringify({ customerId }),
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) {
+    const errorMessage = await response.text();
+    throw new Error(errorMessage);
+  }
+
+  const { url } = await response.json();
+  return url;
+}

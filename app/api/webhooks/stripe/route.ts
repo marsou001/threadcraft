@@ -84,6 +84,9 @@ export async function POST(req: Request) {
       })
       break;
     case "customer.subscription.updated":
+      break;
+    case "customer.subscription.deleted":
+      break;
     case "invoice.paid":
       console.log("Event:", "invoice.paid");
       const invoicePaid = event.data.object as Stripe.Invoice;

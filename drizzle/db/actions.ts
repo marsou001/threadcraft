@@ -82,6 +82,18 @@ export async function getUserPlan(userId: string): Promise<PricingPlan | undefin
   return subscription?.plan;
 }
 
+export async function getUserSubscription(userId: string): Promise<Subscription> {
+  console.log("Fetching subscription for user", userId);
+
+  const [subscription] = await db
+    .select()
+    .from(Subscriptions)
+    .where(eq(Subscriptions.userId, userId))
+    .limit(1)
+    .execute()
+  return subscription;
+}
+
 export async function updateUser(userId: string, values: Partial<User>) {
   console.log("Updating user", userId);
 

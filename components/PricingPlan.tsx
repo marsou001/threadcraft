@@ -1,14 +1,8 @@
-"use client";
-
-import { useState } from "react";
-import type { CreateCheckoutSessionParams, EnterprisePlan, Plan, PricingPlan, User } from "@/types";
-import { loadStripe } from "@stripe/stripe-js";
+import type { EnterprisePlan, Plan, PricingPlan, User } from "@/types";
 import { CheckIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { createCheckoutSession } from "@/services/subscriptions";
+import ChoosePlanButton from "./ChoosePlanButton";
+import ManagePlanButton from "./ManagePlanButton";
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-// TODO: fetch pricing plans from server
 export type PricingPlanProps = {
   user: User;
   plan: Plan | EnterprisePlan;
@@ -16,38 +10,6 @@ export type PricingPlanProps = {
 }
 
 export default function PricingPlan({ plan, user, isUserPlan }: PricingPlanProps) {
-  const [isProcessingSubscription, setIsProcessingSubscription] = useState(false);
-
-  async function handleSubscribe(priceId: string) {
-    const stripe = await stripePromise;
-    if (stripe === null) return;
-
-    let sessionId: string;
-    setIsProcessingSubscription(true);
-
-    const createCheckoutSessionParams = { userId: user.clerkId, priceId, userHasCustomerId: user.stripeCustomerId !== null } as CreateCheckoutSessionParams;
-    if (createCheckoutSessionParams.userHasCustomerId === true) {
-      createCheckoutSessionParams.customerId = user.stripeCustomerId!;
-    } else {
-      createCheckoutSessionParams.customerEmail = user.email;
-    }
-console.log("createCheckoutSessionParams", createCheckoutSessionParams)
-    try {
-      sessionId = await createCheckoutSession(createCheckoutSessionParams);
-    } catch (error) {
-      // TODO: handle error
-      console.log(error);
-      return;
-    } finally {
-      setIsProcessingSubscription(false);
-    }
-    
-    const result = await stripe.redirectToCheckout({ sessionId });
-    if (result.error) {
-      console.error(result.error);
-    }
-  };
-
   return (
     <div
       key={plan.name}
@@ -73,20 +35,20 @@ console.log("createCheckoutSessionParams", createCheckoutSessionParams)
           </li>
         ))}
       </ul>
-      <button
-        onClick={() => plan.priceId && handleSubscribe(plan.priceId)}
-        disabled={isProcessingSubscription || plan.name === "Enterprise"}
-        className={cn("text-black text-sm w-full rounded-sm py-2", {
-          "bg-white hover:bg-gray-200 cursor-pointer": plan.name !== "Enterprise",
-          "bg-gray-400 hover:bg-gray-400 cursor-not-allowed": plan.name === "Enterprise" || isProcessingSubscription,
-        })}
-      >
-        {
-          plan.name === "Enterprise" ? "Coming Soon..." :
-          isUserPlan ? "Cancel Plan" :
-          isProcessingSubscription ? "Processing..." : "Choose Plan"
-         }
-      </button>
+      {
+        plan.name === "Enterprise" ? (
+          <button
+            disabled
+            className="text-black bg-gray-400 text-sm w-full rounded-sm py-2 cursor-not-allowed"
+          >
+            Coming Soon...
+          </button>
+        ) : isUserPlan ? (
+          <ManagePlanButton customerId={user.stripeCustomerId!} />
+        ) : (
+          <ChoosePlanButton user={user} priceId={plan.priceId} />
+        )
+      }
     </div>
   );
 }
