@@ -50,9 +50,9 @@ export default function ChoosePlanButton({ user, priceId }: ChoosePlanButtonProp
     <button
       onClick={() => handleSubscribe(priceId)}
       disabled={isProcessingSubscription}
-      className={cn("text-black text-sm w-full rounded-sm py-2", {
-        "bg-white hover:bg-gray-200 cursor-pointer": !isProcessingSubscription,
-        "bg-gray-400 hover:bg-gray-400 cursor-not-allowed": isProcessingSubscription,
+      className={cn("text-white text-sm w-full rounded-full py-2", {
+        "bg-blue-600 hover:bg-blue-700 cursor-pointer": !isProcessingSubscription,
+        "bg-blue-800 hover:bg-blue-800 cursor-not-allowed": isProcessingSubscription,
       })}
     >
       { isProcessingSubscription ? "Processing..." : "Choose Plan" }
