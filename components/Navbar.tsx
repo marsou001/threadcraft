@@ -54,7 +54,7 @@ export function Navbar() {
             } sm:block mt-4 sm:mt-0`}
           >
             <ul className="flex flex-col sm:flex-row sm:items-center sm:space-x-8">
-              {["Features", "Pricing", "Docs"].map((item) => (
+              {["Features", "Pricing", "Docs", "Plan"].map((item) => (
                 <li className="py-2 sm:py-0" key={item}>
                   <Link
                     href={`/${item.toLowerCase()}`}
