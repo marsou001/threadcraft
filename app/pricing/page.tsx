@@ -1,11 +1,13 @@
 import { pricingPlans } from "@/data";
 import { getCurrentUser } from "@/lib/current-user";
 import PricingPlan from "@/components/PricingPlan";
-import getUserPlan from "@/lib/user-plan";
+import { getUserSubscription as getSubscription } from "@/drizzle/db/actions";
+import getUserPlanFromPriceId from "@/utils/getUserPlanFromPriceId";
 
 export default async function PricingPage() {
   const user = await getCurrentUser();
-  const userPlan = await getUserPlan(user.clerkId);
+  const userSubscription = await getSubscription(user.clerkId);
+  const userPlan = userSubscription && getUserPlanFromPriceId(userSubscription.priceId);
 
   return (
     <main className="text-gray-100 bg-black">
@@ -15,7 +17,7 @@ export default async function PricingPage() {
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {pricingPlans.map((plan) => (
-            <PricingPlan key={plan.name} plan={plan} user={user} isUserPlan={plan.name === userPlan} />
+            <PricingPlan key={plan.name} plan={plan} user={user} isUserPlan={plan.name === userPlan?.name} />
           ))}
         </div>
       </div>

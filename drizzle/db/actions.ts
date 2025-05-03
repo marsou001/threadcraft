@@ -70,19 +70,7 @@ export async function getUserPoints(userId: string) {
   return user.points;
 }
 
-export async function getUserPlan(userId: string): Promise<PricingPlan | undefined> {
-  console.log("Fetching plan for user", userId);
-
-  const [subscription] = await db
-    .select({ plan: Subscriptions.plan })
-    .from(Subscriptions)
-    .where(eq(Subscriptions.userId, userId))
-    .limit(1)
-    .execute()
-  return subscription?.plan;
-}
-
-export async function getUserSubscription(userId: string): Promise<Subscription> {
+export async function getUserSubscription(userId: string): Promise<Subscription | undefined> {
   console.log("Fetching subscription for user", userId);
 
   const [subscription] = await db
@@ -130,25 +118,24 @@ export async function setStripeCustomerId(userId: string, stripeCustomerId: stri
   return user;
 }
 
-export async function createSubscription(subscription: Omit<Subscription, "id" | "isActive" | "cancelAtPeriodEnd">) {
-  console.log("Creating subscription for user", subscription.userId);
+export async function createSubscription(values: Omit<Subscription, "id">) {
+  console.log("Creating subscription for user", values.userId);
 
   const [newSubscription] = await db
     .insert(Subscriptions)
-    .values(subscription)
+    .values(values)
     .returning()
     .execute();
-
   return newSubscription;
 }
 
-export async function updateSubscription(subscriptionId: number, values: Partial<Omit<Subscription, "id" | "userId">>) {
+export async function updateSubscription(subscriptionId: string, values: Pick<Subscription, "priceId">) {
   console.log("Update subscription", subscriptionId);
 
   const [updatedSubscription] = await db
     .update(Subscriptions)
     .set(values)
-    .where(eq(Subscriptions.id, subscriptionId))
+    .where(eq(Subscriptions.subscriptionId, subscriptionId))
     .returning()
     .execute()
   return updatedSubscription;
