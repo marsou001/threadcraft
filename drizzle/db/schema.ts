@@ -16,16 +16,12 @@ export const Users = pgTable("users", {
 
 export const Subscriptions = pgTable("subscriptions", {
   id: serial("id").primaryKey(),
-  subcriptionId: varchar("susbscription_id", { length: 50 }).notNull().unique(),
+  subscriptionId: varchar("susbscription_id", { length: 50 }).notNull().unique(),
   userId: varchar("clerkId", { length: 100 })
     .references(() => Users.clerkId)
     .notNull()
     .unique(),
-  isActive: boolean("is_active").default(true).notNull(),
-  plan: planEnum("plan").notNull(),
-  currentPeriodStart: timestamp("current_period_start").notNull(),
-  currentPeriodEnd: timestamp("current_period_end").notNull(),
-  cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull().default(false),
+  priceId: varchar("price_id", { length: 100 }).notNull().unique(),
 })
 
 export const GeneratedContent = pgTable("generated_content", {

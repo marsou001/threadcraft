@@ -21,13 +21,9 @@ export type EnterprisePlan = {
 
 export type Subscription = {
   id: number;
-  subcriptionId: string;
+  subscriptionId: string;
   userId: string;
-  isActive: boolean;
-  plan: PricingPlan;
-  currentPeriodStart: Date;
-  currentPeriodEnd: Date;
-  cancelAtPeriodEnd: boolean;
+  priceId: string;
 }
 
 export type User = {
