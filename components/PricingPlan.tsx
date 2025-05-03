@@ -39,7 +39,7 @@ export default function PricingPlan({ plan, user, isUserPlan }: PricingPlanProps
         plan.name === "Enterprise" ? (
           <button
             disabled
-            className="text-black bg-gray-400 text-sm w-full rounded-full py-2 cursor-not-allowed"
+            className="text-gray-300 bg-blue-900 text-sm w-full rounded-full py-2 cursor-not-allowed"
           >
             Coming Soon...
           </button>
