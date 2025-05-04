@@ -86,6 +86,12 @@ export async function POST(req: Request) {
       await updateSubscription(subscriptionId, { priceId });
       break;
     }
+    case "customer.subscription.deleted": {
+      const subscription = event.data.object;
+      const subscriptionId = subscription.id;
+      await deleteSubscription(subscriptionId);
+      break;
+    }
     case "invoice.paid": {
       const invoice = event.data.object as Stripe.Invoice;
       if (invoice.customer === null) {
