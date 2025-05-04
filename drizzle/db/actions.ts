@@ -141,6 +141,17 @@ export async function updateSubscription(subscriptionId: string, values: Pick<Su
   return updatedSubscription;
 }
 
+export async function deleteSubscription(subscriptionId: string) {
+  console.log("Delete subscription", subscriptionId);
+
+  const [deletedSubscription] = await db
+    .delete(Subscriptions)
+    .where(eq(Subscriptions.subscriptionId, subscriptionId))
+    .returning()
+    .execute()
+  return deletedSubscription;
+}
+
 export async function saveGeneratedContent(
   userId: string, generatedContent: string, settings: Settings
 ): Promise<Content> {

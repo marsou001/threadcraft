@@ -1,4 +1,3 @@
-import { setStripeCustomerId } from "@/drizzle/db/actions";
 import { headers } from "next/headers";
 import Stripe from "stripe";
 

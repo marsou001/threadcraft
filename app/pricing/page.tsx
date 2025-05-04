@@ -17,7 +17,7 @@ export default async function PricingPage() {
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {pricingPlans.map((plan) => (
-            <PricingPlan key={plan.name} plan={plan} user={user} isUserPlan={plan.name === userPlan?.name} />
+            <PricingPlan key={plan.name} plan={plan} subscription={userSubscription} user={user} isUserPlan={plan.name === userPlan?.name} />
           ))}
         </div>
       </div>

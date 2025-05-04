@@ -40,3 +40,16 @@ export async function createPortalSession(customerId: string): Promise<string> {
   const { url } = await response.json();
   return url;
 }
+
+export async function updateSubscription(subscriptionId: string, priceId: string) {
+  const response = await fetch("/api/update-subscription", {
+    method: "POST",
+    body: JSON.stringify({ subscriptionId, priceId }),
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) {
+    const errorMessage = await response.text();
+    throw new Error(errorMessage);
+  }
+}

@@ -2,21 +2,23 @@
 
 import { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import { createCheckoutSession } from "@/services/subscriptions";
-import type { User, CreateCheckoutSessionParams } from "@/types";
+import { createCheckoutSession, updateSubscription } from "@/services/subscriptions";
+import type { User, CreateCheckoutSessionParams, Subscription } from "@/types";
 import { cn } from "@/lib/utils";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 export type ChoosePlanButtonProps = {
   user: User;
+  subscription: Subscription | undefined;
   priceId: string;
 }
 
-export default function ChoosePlanButton({ user, priceId }: ChoosePlanButtonProps) {
+export default function ChoosePlanButton({ user, subscription, priceId }: ChoosePlanButtonProps) {
   const [isProcessingSubscription, setIsProcessingSubscription] = useState(false);
+  const isUserSubscribed = subscription !== undefined;
 
-  async function handleSubscribe(priceId: string) {
+  async function subscribeToPlan(priceId: string) {
     const stripe = await stripePromise;
     if (stripe === null) return;
 
@@ -46,9 +48,26 @@ export default function ChoosePlanButton({ user, priceId }: ChoosePlanButtonProp
     }
   };
 
+  async function changePlan(priceId: string) {
+    const stripe = await stripePromise;
+    if (stripe === null) return;
+
+    setIsProcessingSubscription(true);
+    try {
+      await updateSubscription(subscription?.subscriptionId! ,priceId);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+      }
+    } finally {
+      setIsProcessingSubscription(false);
+      window.location.reload();
+    }
+  }
+
   return (
     <button
-      onClick={() => handleSubscribe(priceId)}
+      onClick={isUserSubscribed ? () => changePlan(priceId) : () => subscribeToPlan(priceId)}
       disabled={isProcessingSubscription}
       className={cn("text-white text-sm w-full rounded-full py-2", {
         "bg-blue-600 hover:bg-blue-700 cursor-pointer": !isProcessingSubscription,

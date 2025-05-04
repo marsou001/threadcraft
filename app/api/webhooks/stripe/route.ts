@@ -66,6 +66,26 @@ export async function POST(req: Request) {
       }
       break;
     }
+    case "customer.subscription.created": {
+      const subscription = event.data.object;
+      const customerId = typeof subscription.customer === "string"
+        ? subscription.customer
+        : subscription.customer.id;
+      const subscriptionId = subscription.id;
+      const { clerkId: userId } = await waitForUserByCustomerId(customerId);
+      const priceId = subscription.items.data[0].price.id;
+      subscription.items.data[0].id
+      await createSubscription({ subscriptionId, userId, priceId })
+      break;
+    }
+    case "customer.subscription.updated": {
+      const subscription = event.data.object;
+      const subscriptionId = subscription.id;
+      const priceId = subscription.items.data[0].price.id;
+      console.log("priceId", priceId)
+      await updateSubscription(subscriptionId, { priceId });
+      break;
+    }
     case "invoice.paid": {
       const invoice = event.data.object as Stripe.Invoice;
       if (invoice.customer === null) {
@@ -76,37 +96,19 @@ export async function POST(req: Request) {
         ? invoice.customer
         : invoice.customer.id;
       const user = await waitForUserByCustomerId(customerId);
-      const priceId = invoice.lines.data[0].pricing?.price_details?.price!;
+      const priceId = invoice.lines.data[invoice.lines.data.length - 1].pricing?.price_details?.price!;
       const plan = pricingPlans.find((plan) => plan.priceId === priceId);
       // Plan must not be Enterprise. Leave that to later
       if (plan === undefined || plan.priceId === null) {
         console.error("No plan found with price id", priceId);
         return new Response("No plan found", { status: 404 });
       }
-
       await updateUser(user.clerkId, { points: plan.points });
       break;
     }
     case "invoice.payment_failed": {
       const invoice = event.data.object;
       console.log("Event:", "invoice.payment_failed");
-      break;
-    }
-    case "customer.subscription.created": {
-      const subscription = event.data.object;
-      const customerId = typeof subscription.customer === "string"
-        ? subscription.customer
-        : subscription.customer.id;
-      const subscriptionId = subscription.id;
-      const { clerkId: userId } = await waitForUserByCustomerId(customerId);
-      const priceId = subscription.items.data[0].price.id;
-      await createSubscription({ subscriptionId, userId, priceId })
-      break;
-    }
-    case "customer.subscription.updated": {
-      break;
-    }
-    case "customer.subscription.deleted": {
       break;
     }
   }

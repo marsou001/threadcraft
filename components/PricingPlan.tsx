@@ -1,4 +1,4 @@
-import type { EnterprisePlan, Plan, PricingPlan, User } from "@/types";
+import type { EnterprisePlan, Plan, PricingPlan, Subscription, User } from "@/types";
 import { CheckIcon } from "lucide-react";
 import ChoosePlanButton from "./ChoosePlanButton";
 import ManagePlanButton from "./ManagePlanButton";
@@ -6,10 +6,11 @@ import ManagePlanButton from "./ManagePlanButton";
 export type PricingPlanProps = {
   user: User;
   plan: Plan | EnterprisePlan;
+  subscription: Subscription | undefined;
   isUserPlan: boolean;
 }
 
-export default function PricingPlan({ plan, user, isUserPlan }: PricingPlanProps) {
+export default function PricingPlan({ plan, user, subscription, isUserPlan }: PricingPlanProps) {
   return (
     <div
       key={plan.name}
@@ -46,7 +47,7 @@ export default function PricingPlan({ plan, user, isUserPlan }: PricingPlanProps
         ) : isUserPlan ? (
           <ManagePlanButton customerId={user.stripeCustomerId!} />
         ) : (
-          <ChoosePlanButton user={user} priceId={plan.priceId} />
+          <ChoosePlanButton user={user} subscription={subscription} priceId={plan.priceId} />
         )
       }
     </div>
