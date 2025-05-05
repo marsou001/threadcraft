@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import { pricingPlans } from "@/data";
 import { getCurrentUser } from "@/lib/current-user";
 import PricingPlan from "@/components/PricingPlan";
 import { getUserSubscription as getSubscription } from "@/drizzle/db/actions";
 import getUserPlanFromPriceId from "@/utils/getUserPlanFromPriceId";
+
+export const metadata: Metadata = {
+  title: "Pricing",
+  description: "Choose the right ThreadlyAI plan for your content needs. Compare Basic and Pro features — Enterprise plan coming soon for power users and teams.",
+  keywords: "ThreadlyAI pricing, AI thread generator plans, content creation pricing, social media automation cost, AI copywriting plans, Basic Pro Enterprise",
+};
 
 export default async function PricingPage() {
   const user = await getCurrentUser();
