@@ -102,7 +102,7 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
   async function handleGenerateContent(e: FormEvent) {
     e.preventDefault();
     
-    if (userPoints === undefined || userPoints < 5) {
+    if (userPoints < pointsPerGeneration) {
       toast.warning("Not enough points");
       // Maybe redirect to pricing page?
       return;
@@ -165,8 +165,6 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
         toast.error(error.message);
       }
     }
-    
-    setIsGenerating(false);
   }
 
   useEffect(() => {
