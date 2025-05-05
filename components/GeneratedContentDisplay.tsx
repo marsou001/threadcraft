@@ -10,9 +10,10 @@ export type GeneratedContentDisplayProps = {
   isContentFromHistory: boolean;
   socialMedia: SocialMedia;
   generatedContent: string[];
+  maxCharactersCountPerTweet: number;
 };
 
-export default function GeneratedContentDisplay({ isContentFromHistory, socialMedia, generatedContent }: GeneratedContentDisplayProps) {
+export default function GeneratedContentDisplay({ isContentFromHistory, socialMedia, generatedContent, maxCharactersCountPerTweet }: GeneratedContentDisplayProps) {
   const [copiedText, setCopiedText] = useState<string | null>(null);
 
   async function copy(text: string) {
@@ -36,7 +37,7 @@ export default function GeneratedContentDisplay({ isContentFromHistory, socialMe
             <div key={tweet} className="bg-gray-700 relative p-4 rounded-xl">
               <ReactMarkdown>{ tweet }</ReactMarkdown>
               <div className="text-gray-400 text-xs flex justify-between items-center mt-2">
-                <span>{ tweet.length }/{ 280 }</span>
+                <span>{ tweet.length }/{ maxCharactersCountPerTweet }</span>
                 <button
                   onClick={() => copy(tweet)}
                   className="text-white bg-gray-600 hover:bg-gray-500 p-2 rounded-full cursor-pointer transition-colors"

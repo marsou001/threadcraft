@@ -29,7 +29,7 @@ export async function POST(req: Request) {
 
   switch(socialMedia) {
     case "X":
-      response = await generateXContent(promptText, customSettings.numberOfTweets);
+      response = await generateXContent(promptText, customSettings.numberOfTweets, customSettings.maxCharactersCountPerTweet);
       break;
     case "Instagram":
       response = await generateInstagramContent(promptText, customSettings.imagePrompt);
@@ -50,8 +50,8 @@ export async function POST(req: Request) {
   return Response.json({ generatedContent: generatedContent }, { status: 200 });
 }
 
-async function generateXContent(promptText: string, numberOfTweets: number) {
-  promptText += ` Provide a thread of ${numberOfTweets} tweets, each under 280 characters.`;
+async function generateXContent(promptText: string, numberOfTweets: number, maxCharactersCountPerTweet: number) {
+  promptText += ` Provide a thread of ${numberOfTweets} tweets, each between ${maxCharactersCountPerTweet - 100} and ${maxCharactersCountPerTweet} characters.`;
   const response = await generateContent(promptText)
   return response;
 }

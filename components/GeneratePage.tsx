@@ -56,6 +56,7 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
   const [selectedHistoryItem, setSelectedHistoryItem] = useState<GeneratedContent | null>(null);
   const [userPoints, setUserPoints] = useState<number>(user.points);
   const [numberOfTweets, setNumberOfTweets] = useState<number>(5);
+  const [maxCharactersCountPerTweet, setMaxCharactersCountPerTweet] = useState<number>(280);
   const [shouldAddAIDescription, setShouldAddAIDescription] = useState(false);
   const [image, setImage] = useState<File | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -75,7 +76,8 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
     dispatch({ type: SettingsActionType.UPDATE_NUMBER_OF_HASHTAGS, payload: item.numberOfHashtags });
     
     if (item.socialMedia === "X") {
-      setNumberOfTweets(item.numberOfTweets)
+      setNumberOfTweets(item.numberOfTweets);
+      setMaxCharactersCountPerTweet(item.maxCharactersCountPerTweet);
     } else if (item.socialMedia === "Instagram") {
       const image = item.imagePrompt === null ? null : dataURLToImage(item.imagePrompt);
       setImage(image);
@@ -110,6 +112,7 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
 
     if (settings.socialMedia === "X") {
       settings.numberOfTweets = numberOfTweets;
+      settings.maxCharactersCountPerTweet = maxCharactersCountPerTweet;
     }
 
     if (settings.socialMedia === "Instagram") {
@@ -238,20 +241,38 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
           </div>
 
           {socialMedia === "X" && (
-            <div>
-              <label htmlFor="number-of-tweets" className="text-gray-300 text-sm font-medium block mb-2">
-                Number of tweets - {numberOfTweets}
-              </label>
-              <Slider
-                id="number-of-tweets"
-                defaultValue={[numberOfTweets]}
-                max={30}
-                step={1}
-                value={[numberOfTweets]}
-                onValueChange={(value) => setNumberOfTweets(value[0])}
-                className="cursor-pointer" 
-              />
-            </div>
+            <>
+              <div>
+                <label htmlFor="number-of-tweets" className="text-gray-300 text-sm font-medium block mb-2">
+                  Number of tweets - {numberOfTweets}
+                </label>
+                <Slider
+                  id="number-of-tweets"
+                  defaultValue={[numberOfTweets]}
+                  max={30}
+                  step={1}
+                  value={[numberOfTweets]}
+                  onValueChange={(value) => setNumberOfTweets(value[0])}
+                  className="cursor-pointer" 
+                  />
+              </div>
+                  
+              <div>
+                <label htmlFor="max-characters-count-per-tweet" className="text-gray-300 text-sm font-medium block mb-2">
+                  Maximum characters per tweets - {maxCharactersCountPerTweet}
+                </label>
+                <Slider
+                  id="max-characters-count-per-tweet"
+                  defaultValue={[maxCharactersCountPerTweet]}
+                  min={100}
+                  max={500}
+                  step={20}
+                  value={[maxCharactersCountPerTweet]}
+                  onValueChange={(value) => setMaxCharactersCountPerTweet(value[0])}
+                  className="cursor-pointer" 
+                />
+              </div>
+            </>
           )}
 
           <div>
@@ -278,7 +299,7 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
               htmlFor="number-of-hashtags"
               className="text-gray-300 text-sm font-medium block mb-2"
             >
-              Number of hashtags - {commonSettings.numberOfHashtags}
+              Number of hashtags {socialMedia === "X" && "per tweet"} - {commonSettings.numberOfHashtags}
             </label>
             <Slider
               id="number-of-hashtags"
@@ -355,7 +376,7 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
 
         {generatedContent.length > 0 && (
           <>
-            <GeneratedContentDisplay isContentFromHistory={isContentFromHistory} socialMedia={socialMedia} generatedContent={generatedContent} />
+            <GeneratedContentDisplay isContentFromHistory={isContentFromHistory} socialMedia={socialMedia} generatedContent={generatedContent} maxCharactersCountPerTweet={maxCharactersCountPerTweet} />
             <GeneratedContentPreview generatedContent={generatedContent} socialMedia={socialMedia} image={image} />
           </>
         )}

@@ -168,10 +168,10 @@ export async function saveGeneratedContent(
     case "X":
       const [customXSettings] = await db
         .insert(XSettings)
-        .values({ generatedContentId: content.id, numberOfTweets: settings.numberOfTweets })
+        .values({ generatedContentId: content.id, numberOfTweets: settings.numberOfTweets, maxCharactersCountPerTweet: settings.maxCharactersCountPerTweet })
         .returning()
         .execute();
-      return { ...content, socialMedia: "X", numberOfTweets: customXSettings.numberOfTweets }
+      return { ...content, socialMedia: "X", numberOfTweets: customXSettings.numberOfTweets, maxCharactersCountPerTweet: settings.maxCharactersCountPerTweet }
     case "Instagram":
       const [customInstagramSettings] = await db
         .insert(InstagramSettings)

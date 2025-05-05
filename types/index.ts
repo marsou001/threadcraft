@@ -96,6 +96,7 @@ export type CreateCheckoutSessionParams = {
 
 type XSettings = {
   numberOfTweets: number;
+  maxCharactersCountPerTweet: number;
 };
 
 type InstagramSettings = {

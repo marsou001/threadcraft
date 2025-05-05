@@ -42,6 +42,7 @@ export const XSettings = pgTable("x_settings", {
     .references(() => GeneratedContent.id)
     .notNull(),
   numberOfTweets: smallint("number_of_tweets").notNull(),
+  maxCharactersCountPerTweet: smallint("max_characters_count_per_tweet").notNull().default(280),
 });
 
 export const InstagramSettings = pgTable("instagram_settings", {
