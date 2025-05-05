@@ -4,10 +4,8 @@ export async function getUserByClerkId(clerkUserId: string): Promise<User> {
   const response = await fetch("/api/users?clerk_user=" + clerkUserId);
   
   if (!response.ok) {
-    const error = await response.text();
-    console.log(error)
-  
-    throw new Error(error);
+    const errorMessage = await response.text();
+    throw new Error(errorMessage);
   }
   
   const user = await response.json();
@@ -18,10 +16,8 @@ export async function getUserPoints(userId: string): Promise<number> {
   const response = await fetch("/api/users/points?user=" + userId);
 
   if (!response.ok) {
-    const error = await response.text();
-    console.log(error)
-
-    throw new Error(error);
+    const errorMessage = await response.text();
+    throw new Error(errorMessage);
   }
 
   const data = await response.json();

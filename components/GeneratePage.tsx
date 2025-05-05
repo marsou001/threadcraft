@@ -17,6 +17,7 @@ import UserHistory from "@/components/UserHistory";
 import UserPoints from "@/components/UserPoints";
 import GeneratedContentPreview from "./GeneratedContentPreview";
 import { updateUserPoints } from "@/services/users";
+import { toast } from "sonner";
 
 const contentTypes: ContentType[] = [
   { socialMedia: "X", label: "Twitter Thread" },
@@ -102,7 +103,7 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
     e.preventDefault();
     
     if (userPoints === undefined || userPoints < 5) {
-      alert("Not enough points");
+      toast.warning("Not enough points");
       // Maybe redirect to pricing page?
       return;
     }
@@ -122,7 +123,7 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
           imagePrompt = await imageToDataURL(image);
         } catch (error) {
           if (error instanceof Error) {
-            console.log("Error: ", error.message);
+            toast.error(error.message);
           }
           setIsGenerating(false);
           return;
@@ -130,14 +131,13 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
       }
       settings.imagePrompt = imagePrompt;
     }
-
     // Generate content
     let newlyGeneratedContent: GeneratedContent;
     try {
       newlyGeneratedContent = await generateContent(userId!, settings);
     } catch (error) {
       if (error instanceof Error) {
-        console.log("Error", error.message);
+        toast.error(error.message);
       }
       setIsGenerating(false);
       return;
@@ -162,7 +162,7 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
       setUserPoints(newUserPoints)
     } catch (error) {
       if (error instanceof Error) {
-        console.log("error: ", error.message);
+        toast.error(error.message);
       }
     }
     

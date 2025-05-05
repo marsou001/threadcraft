@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { createPortalSession } from "@/services/subscriptions";
 import { useState } from "react"
+import { toast } from "sonner";
 
 export default function ManagePlanButton({ customerId }: { customerId: string}) {
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
@@ -14,7 +15,7 @@ export default function ManagePlanButton({ customerId }: { customerId: string}) 
       window.location.href = url;
     } catch(error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        toast(error.message);
       }
     } finally {
       setIsOpeningPortal(false);

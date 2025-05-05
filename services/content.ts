@@ -4,7 +4,8 @@ export async function getHistory(userId: string): Promise<History> {
   const response = await fetch("/api/content?clerk_user=" + userId);
 
   if (!response.ok) {
-    throw new Error(response.statusText);
+    const errorMessage = await response.text();
+    throw new Error(errorMessage);
   }
 
   const data = await response.json();
@@ -19,7 +20,8 @@ export async function generateContent(userId: string, settings: Settings): Promi
   })
 
   if (!response.ok) {
-    throw new Error(response.statusText);
+    const errorMessage = await response.text();
+    throw new Error(errorMessage);
   }
 
   const data = await response.json();

@@ -36,7 +36,6 @@ export async function POST(req: Request) {
   }
 
   let session: Stripe.Response<Stripe.Checkout.Session>;
-  
   try {
     session = await stripe.checkout.sessions.create(sessionParams);
   } catch (error) {

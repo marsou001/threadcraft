@@ -5,6 +5,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { createCheckoutSession, updateSubscription } from "@/services/subscriptions";
 import type { User, CreateCheckoutSessionParams, Subscription } from "@/types";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -35,8 +36,9 @@ export default function ChoosePlanButton({ user, subscription, priceId }: Choose
     try {
       sessionId = await createCheckoutSession(createCheckoutSessionParams);
     } catch (error) {
-      // TODO: handle error
-      console.log(error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
       return;
     } finally {
       setIsProcessingSubscription(false);
@@ -44,6 +46,7 @@ export default function ChoosePlanButton({ user, subscription, priceId }: Choose
     
     const result = await stripe.redirectToCheckout({ sessionId });
     if (result.error) {
+      toast.error("Something went wrong");
       console.error(result.error);
     }
   };
@@ -57,7 +60,7 @@ export default function ChoosePlanButton({ user, subscription, priceId }: Choose
       await updateSubscription(subscription?.subscriptionId! ,priceId);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        toast.error(error.message);
       }
     } finally {
       setIsProcessingSubscription(false);
