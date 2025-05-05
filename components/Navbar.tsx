@@ -34,7 +34,7 @@ export function Navbar() {
             <Link href="/" className="flex items-center space-x-2">
               <Zap className="w-8 h-8 text-blue-500" />
               <span className="text-xl sm:text-2xl font-bold text-white">
-                ThreadCraft AI
+                Threadly AI
               </span>
             </Link>
           </div>

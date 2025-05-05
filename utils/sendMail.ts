@@ -18,9 +18,9 @@ async function sendMail(recipientEmail: string, recipientName: string) {
   try {
     const mailOptions: MailOptions = {
       to: recipientEmail,
-      subject: `Welcome to ThreadCraft ${recipientName}`,
+      subject: `Welcome to Threadly AI ${recipientName}`,
       html: `
-        <h1>Welcome to ThreadCraft AI, ${recipientName}!</h1>
+        <h1>Welcome to Threadly AI, ${recipientName}!</h1>
         <p>We're excited to have you on board. Get started by...</p>
       `,
     };
