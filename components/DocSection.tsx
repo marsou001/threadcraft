@@ -5,12 +5,12 @@ export default function DocSection({ section }: { section: DocSection}) {
   return (
     <div
       key={section.title}
-      className="p-6 rounded-lg border border-gray-800 flex flex-col"
+      className="p-6 border border-gray-800 rounded-lg"
     >
-      <h2 className="text-2xl font-bold mb-3 text-white">
+      <h2 className="text-white text-2xl font-bold mb-3">
         {section.title}
       </h2>
-      <p className="text-gray-400 mb-4 flex-grow">
+      <p className="text-gray-400 mb-4">
         {section.description}
       </p>
       <button
