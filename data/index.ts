@@ -1,4 +1,4 @@
-import { EnterprisePlan, Plan, Tone } from "@/types";
+import type { DocSection, EnterprisePlan, Plan, Tone } from "@/types";
 
 export const features = [
   {
@@ -69,3 +69,36 @@ export const pricingPlans: [...Plan[], EnterprisePlan] = [
 ];
 
 export const tones: Tone[] = ["Casual", "Conversational", "Humorous", "Professional", "Empathetic", "Enthusiastic", "Authoritative", "Serious", "Neutral", "Joyful", "Friendly", "Encouraging"];
+
+export const docsSections: DocSection[] = [
+  {
+    title: "Getting Started",
+    description:
+      "Learn how to set up your account and create your first AI-generated content.",
+    link: "/docs/getting-started",
+  },
+  {
+    title: "Twitter Threads",
+    description:
+      "Discover how to create engaging Twitter threads using our AI technology.",
+    link: "/docs/twitter-threads",
+  },
+  {
+    title: "Instagram Captions",
+    description:
+      "Learn the best practices for generating Instagram captions that boost engagement.",
+    link: "/docs/instagram-captions",
+  },
+  {
+    title: "LinkedIn Posts",
+    description:
+      "Explore techniques for crafting professional LinkedIn content with AI assistance.",
+    link: "/docs/linkedin-posts",
+  },
+  {
+    title: "API Reference",
+    description:
+      "Detailed documentation for integrating our AI content generation into your applications.",
+    link: "/docs/api-reference",
+  },
+];

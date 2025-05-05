@@ -94,6 +94,12 @@ export type CreateCheckoutSessionParams = {
   customerEmail: string;
 }
 
+export type DocSection = {
+  title: string;
+  description: string;
+  link: string;
+}
+
 type XSettings = {
   numberOfTweets: number;
   maxCharactersCountPerTweet: number;
