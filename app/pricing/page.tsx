@@ -4,6 +4,9 @@ import { getCurrentUser } from "@/lib/current-user";
 import PricingPlan from "@/components/PricingPlan";
 import { getUserSubscription as getSubscription } from "@/drizzle/db/actions";
 import getUserPlanFromPriceId from "@/utils/getUserPlanFromPriceId";
+import { Plan, Subscription, User } from "@/types";
+import assertIsError from "@/utils/assertIsError";
+import ErrorComponent from "@/components/ErrorComponent";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -12,9 +15,22 @@ export const metadata: Metadata = {
 };
 
 export default async function PricingPage() {
-  const user = await getCurrentUser();
-  const userSubscription = await getSubscription(user.clerkId);
-  const userPlan = userSubscription && getUserPlanFromPriceId(userSubscription.priceId);
+  let user: User, userSubscription: Subscription | undefined, userPlan: Plan | undefined;
+
+  try {
+    user = await getCurrentUser();
+  } catch(error) {
+    assertIsError(error);
+    return <ErrorComponent errorMessage={error.message} />
+  }
+  try {
+    userSubscription = await getSubscription(user.clerkId);
+    userPlan = userSubscription && getUserPlanFromPriceId(userSubscription.priceId);
+  } catch(error) {
+    assertIsError(error);
+    console.log(error.message);
+    return <ErrorComponent />
+  }
 
   return (
     <div className="container bg-black mx-auto py-20">
