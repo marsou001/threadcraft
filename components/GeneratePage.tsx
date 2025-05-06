@@ -18,6 +18,7 @@ import UserPoints from "@/components/UserPoints";
 import GeneratedContentPreview from "./GeneratedContentPreview";
 import { updateUserPoints } from "@/services/users";
 import { toast } from "sonner";
+import Stripe from "stripe";
 
 const contentTypes: ContentType[] = [
   { socialMedia: "X", label: "Twitter Thread" },
@@ -47,9 +48,10 @@ function commonSettingsReducer(state: CommonSettings, action: SettingsAction): C
 export type GenerateContentProps = {
   history: History;
   user: User;
+  sessionPaymentStatus: Stripe.Checkout.Session.PaymentStatus | null;
 }
 
-export default function GeneratePage({ history: userHistory, user }: GenerateContentProps) {
+export default function GeneratePage({ history: userHistory, user, sessionPaymentStatus }: GenerateContentProps) {
   const [commonSettings, dispatch] = useReducer(commonSettingsReducer, initialCommonSettings);
   const [history, setHistory] = useState<History>(userHistory);
   const [socialMedia, setSocialMedia] = useState<SocialMedia>("LinkedIn");
@@ -183,6 +185,15 @@ export default function GeneratePage({ history: userHistory, user }: GenerateCon
         break;
     }
   }, [socialMedia, numberOfTweets, shouldAddAIDescription]);
+
+  useEffect(() => {
+    if (sessionPaymentStatus === null) return;
+    if (sessionPaymentStatus === "paid") {
+      setTimeout(() => toast.success("Your subscription was successful"), 0);
+    } else {
+      setTimeout(() => toast.error("Something went wrong while processing your payment"), 0);
+    }
+  }, []);
   
   return (
     <div className="grid grid-cols-1 mt-14 lg:grid-cols-3 gap-8">

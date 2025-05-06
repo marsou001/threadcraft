@@ -1,16 +1,21 @@
+"use client"
+
 import type { EnterprisePlan, Plan, PricingPlan, Subscription, User } from "@/types";
 import { CheckIcon } from "lucide-react";
 import ChoosePlanButton from "./ChoosePlanButton";
 import ManagePlanButton from "./ManagePlanButton";
+import { useState } from "react";
 
 export type PricingPlanProps = {
   user: User;
   plan: Plan | EnterprisePlan;
+  userPlanName: PricingPlan | undefined;
   subscription: Subscription | undefined;
-  isUserPlan: boolean;
 }
 
-export default function PricingPlan({ plan, user, subscription, isUserPlan }: PricingPlanProps) {
+export default function PricingPlan({ plan, user, subscription, userPlanName }: PricingPlanProps) {
+  const [isUserPlan, setIsUserPlan] = useState(plan.name === userPlanName);
+
   return (
     <div
       key={plan.name}
@@ -47,7 +52,7 @@ export default function PricingPlan({ plan, user, subscription, isUserPlan }: Pr
         ) : isUserPlan ? (
           <ManagePlanButton customerId={user.stripeCustomerId!} />
         ) : (
-          <ChoosePlanButton user={user} subscription={subscription} priceId={plan.priceId} />
+          <ChoosePlanButton user={user} subscription={subscription} priceId={plan.priceId} setIsUserPlan={setIsUserPlan} />
         )
       }
     </div>

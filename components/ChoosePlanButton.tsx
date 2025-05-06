@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { createCheckoutSession, updateSubscription } from "@/services/subscriptions";
 import type { User, CreateCheckoutSessionParams, Subscription } from "@/types";
@@ -13,9 +14,10 @@ export type ChoosePlanButtonProps = {
   user: User;
   subscription: Subscription | undefined;
   priceId: string;
+  setIsUserPlan: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function ChoosePlanButton({ user, subscription, priceId }: ChoosePlanButtonProps) {
+export default function ChoosePlanButton({ user, subscription, priceId, setIsUserPlan }: ChoosePlanButtonProps) {
   const [isProcessingSubscription, setIsProcessingSubscription] = useState(false);
   const isUserSubscribed = subscription !== undefined;
 
@@ -57,14 +59,16 @@ export default function ChoosePlanButton({ user, subscription, priceId }: Choose
 
     setIsProcessingSubscription(true);
     try {
-      await updateSubscription(subscription?.subscriptionId! ,priceId);
+      await updateSubscription(subscription?.subscriptionId!, priceId);
+      // setIsUserPlan((prev) => !prev);
+      setTimeout(() => window.location.reload(), 1000)
+      toast.success("You've successfully switched plans");
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
       }
     } finally {
       setIsProcessingSubscription(false);
-      window.location.reload();
     }
   }
 
