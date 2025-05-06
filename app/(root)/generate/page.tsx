@@ -35,10 +35,8 @@ export default async function Generate({
   const history = await getUserHistory(user.clerkId);
 
   return (
-    <div className="text-white min-h-screen bg-gradient-to-br from-gray-900 to-black">
-      <div className="container mx-auto px-4 mb-8 sm:px-6 lg:px-8 py-8">
-        <GeneratePage history={history} user={user} sessionPaymentStatus={sessionPaymentStatus} />
-      </div>
+    <div className="container mx-auto px-4 mb-8 sm:px-6 lg:px-8 py-8">
+      <GeneratePage history={history} user={user} sessionPaymentStatus={sessionPaymentStatus} />
     </div>
   )
 }
