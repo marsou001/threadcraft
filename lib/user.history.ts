@@ -1,5 +1,6 @@
 import type { History } from "@/types";
 import { getAllGeneratedContentForUser } from "@/drizzle/db/actions";
+import assertIsError from "@/utils/assertIsError";
 
 export default async function getUserHistory(userId: string): Promise<History> {
   let history: History;
@@ -7,10 +8,9 @@ export default async function getUserHistory(userId: string): Promise<History> {
   try {
     history = await getAllGeneratedContentForUser(userId);
   } catch (error) {
-    if (error instanceof Error) {
-      console.log("Error fetching user history", error.message);
-    }
-    throw new Error("Error fetching user history");
+    assertIsError(error);
+    console.log("Error fetching user history", error.message);
+    throw new Error("We couldn't get your history, please refresh the page");
   }
 
   return history;

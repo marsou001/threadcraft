@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import type { User } from "@/types";
 import { getUserByClerkId } from "@/drizzle/db/actions";
+import assertIsError from "@/utils/assertIsError";
 
 let user: User | null = null;
 
@@ -13,10 +14,9 @@ export async function getCurrentUser(): Promise<User> {
   try {
     user = await getUserByClerkId(userId);
   } catch (error) {
-    if (error instanceof Error) {
-      console.log("Error fetching user data", error.message);
-    }
-    throw new Error("Error fetching user data");
+    assertIsError(error);
+    console.log("Error fetching user data", error.message);
+    throw new Error("We couldn't get your data, please refresh the page");
   }
 
   return user;
