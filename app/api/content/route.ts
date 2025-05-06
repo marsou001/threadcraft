@@ -1,4 +1,5 @@
 import { getAllGeneratedContentForUser, saveGeneratedContent } from "@/drizzle/db/actions";
+import assertIsError from "@/utils/assertIsError";
 import OpenAI from "openai";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -27,19 +28,25 @@ export async function POST(req: Request) {
   const promptText = `Generate ${socialMedia} content in an ${tone} tone, with this instruction(s): "${prompt}". Add ${numberOfHashtags} related hashtags at the end.`;
   let response: OpenAI.Responses.Response;
 
-  switch(socialMedia) {
-    case "X":
-      response = await generateXContent(promptText, customSettings.numberOfTweets, customSettings.maxCharactersCountPerTweet);
-      break;
-    case "Instagram":
-      response = await generateInstagramContent(promptText, customSettings.imagePrompt);
-      break;
-    case "LinkedIn":
-      response = await generateLinkedInContent(promptText);
-      break;
-    default:
-      response = await generateLinkedInContent(promptText);
-      break;
+  try {
+    switch(socialMedia) {
+      case "X":
+        response = await generateXContent(promptText, customSettings.numberOfTweets, customSettings.maxCharactersCountPerTweet);
+        break;
+      case "Instagram":
+        response = await generateInstagramContent(promptText, customSettings.imagePrompt);
+        break;
+      case "LinkedIn":
+        response = await generateLinkedInContent(promptText);
+        break;
+      default:
+        response = await generateLinkedInContent(promptText);
+        break;
+    }
+  } catch(error) {
+    assertIsError(error);
+    console.log(error);
+    return new Response("Something went wrong", { status: 502 });
   }
   
   if (response.error !== null) {
