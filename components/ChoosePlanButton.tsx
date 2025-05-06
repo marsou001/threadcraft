@@ -14,10 +14,9 @@ export type ChoosePlanButtonProps = {
   user: User;
   subscription: Subscription | undefined;
   priceId: string;
-  setIsUserPlan: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function ChoosePlanButton({ user, subscription, priceId, setIsUserPlan }: ChoosePlanButtonProps) {
+export default function ChoosePlanButton({ user, subscription, priceId }: ChoosePlanButtonProps) {
   const [isProcessingSubscription, setIsProcessingSubscription] = useState(false);
   const isUserSubscribed = subscription !== undefined;
 
@@ -60,9 +59,8 @@ export default function ChoosePlanButton({ user, subscription, priceId, setIsUse
     setIsProcessingSubscription(true);
     try {
       await updateSubscription(subscription?.subscriptionId!, priceId);
-      // setIsUserPlan((prev) => !prev);
-      setTimeout(() => window.location.reload(), 1000)
       toast.success("You've successfully switched plans");
+      setTimeout(() => window.location.reload(), 1500);
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
