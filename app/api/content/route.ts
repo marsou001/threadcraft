@@ -91,7 +91,7 @@ async function generateContent(promptText: string) {
 
 async function generateContentWithImageDescription(promptText: string, imagePrompt: string) {
   const response = await openai.responses.create({
-    model: "gpt-3.5-turbo",
+    model: "gpt-4o-mini",
     input: [
       {
         role: "user",
