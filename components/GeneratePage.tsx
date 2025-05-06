@@ -155,7 +155,7 @@ export default function GeneratePage({ history: userHistory, user, sessionPaymen
     setHistory((history) => [newlyGeneratedContent, ...history!]);
     setSelectedHistoryItem(newlyGeneratedContent);
     setIsContentFromHistory(false);
-
+    setIsGenerating(false);
     // Update user points
     const newUserPoints = userPoints - pointsPerGeneration;
 
