@@ -9,6 +9,7 @@ import {
 } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 import { Menu, X, Zap } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -49,9 +50,12 @@ export function Navbar() {
             )}
           </button>
           <div
-            className={`w-full sm:w-auto ${
-              isMenuOpen ? "block" : "hidden"
-            } sm:block mt-4 sm:mt-0`}
+            className={cn("max-sm:fixed max-sm:top-12 max-sm:inset-x-0 max-sm:text-center w-full sm:w-auto sm:block mt-4 sm:mt-0 transition-colors duration-300", {
+              "block": isMenuOpen,
+              "hidden": !isMenuOpen,
+              "max-sm:bg-gray-900/80 max-sm:backdrop-blur-md": isScrolled,
+              "max-sm:bg-black": !isScrolled,
+            })}
           >
             <ul className="flex flex-col sm:flex-row sm:items-center sm:space-x-8">
               {["Features", "Pricing", "Docs"].map((item) => (
