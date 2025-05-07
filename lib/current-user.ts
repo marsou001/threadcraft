@@ -5,11 +5,16 @@ import assertIsError from "@/utils/assertIsError";
 
 let user: User | null = null;
 
-export async function getCurrentUser(): Promise<User> {
+export async function getCurrentUser(): Promise<User>;
+export async function getCurrentUser(redirectIfNotAuthenticated: false): Promise<User | null>;
+
+export async function getCurrentUser(redirectIfNotAuthenticated: boolean = true) {
   if (user !== null) return user;
 
   const { userId, redirectToSignIn } = await auth();
-  if (userId === null) return redirectToSignIn();
+  if (userId === null) {
+    return redirectIfNotAuthenticated ? redirectToSignIn() : null;
+  }
   
   try {
     user = await getUserByClerkId(userId);

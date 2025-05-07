@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react";
-import type { Dispatch, SetStateAction } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { createCheckoutSession, updateSubscription } from "@/services/subscriptions";
 import type { User, CreateCheckoutSessionParams, Subscription } from "@/types";
