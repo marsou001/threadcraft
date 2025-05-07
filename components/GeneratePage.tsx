@@ -299,8 +299,6 @@ export default function GeneratePage({ history: userHistory, user, sessionPaymen
             />
           </div>
 
-          {/* TODO: number of characters */}
-          
           <div>
             <label
               htmlFor="number-of-hashtags"

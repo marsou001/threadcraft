@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/lib/current-user";
 import PricingPlan from "@/components/PricingPlan";
 import { getUserSubscription as getSubscription } from "@/drizzle/db/actions";
 import getUserPlanFromPriceId from "@/utils/getUserPlanFromPriceId";
-import { Plan, Subscription, User } from "@/types";
+import type { Plan, Subscription, User } from "@/types";
 import assertIsError from "@/utils/assertIsError";
 import ErrorComponent from "@/components/ErrorComponent";
 import PricingPlanForNonAuthenticated from "@/components/PricingPlanForNonAuthenticated";

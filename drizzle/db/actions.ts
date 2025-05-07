@@ -1,7 +1,7 @@
 import { db } from ".";
 import { GeneratedContent, InstagramSettings, LinkedInSettings, Subscriptions, Users, XSettings } from "./schema";
 import { and, desc, eq } from "drizzle-orm";
-import type { GeneratedContent as Content, History, PricingPlan, Settings, Subscription, User } from "@/types";
+import type { GeneratedContent as Content, History, Settings, Subscription, User } from "@/types";
 
 export async function createUser(clerkId: string, email: string, name: string) {
   console.log("Creating user ", clerkId, email, name);

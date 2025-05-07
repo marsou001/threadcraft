@@ -26,7 +26,7 @@ export default function ChoosePlanButton({ user, subscription, priceId }: Choose
     let sessionId: string;
     setIsProcessingSubscription(true);
 
-    const createCheckoutSessionParams = { userId: user.clerkId, priceId, userHasCustomerId: user.stripeCustomerId !== null } as CreateCheckoutSessionParams;
+    const createCheckoutSessionParams = { user: user.id, priceId, userHasCustomerId: user.stripeCustomerId !== null } as CreateCheckoutSessionParams;
     if (createCheckoutSessionParams.userHasCustomerId === true) {
       createCheckoutSessionParams.customerId = user.stripeCustomerId!;
     } else {
