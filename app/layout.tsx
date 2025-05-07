@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const baseUrl = "https://threadlyai.netlify.app";
+const baseUrl = "https://threadly.pro";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
