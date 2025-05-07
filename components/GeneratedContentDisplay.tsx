@@ -5,6 +5,9 @@ import ReactMarkdown from "react-markdown";
 import copyToClipboard from "@/utils/copyToClipboard";
 import { SocialMedia } from "@/types";
 import { Copy, CopyCheck } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import assertIsError from "@/utils/assertIsError";
+import { toast } from "sonner";
 
 export type GeneratedContentDisplayProps = {
   isContentFromHistory: boolean;
@@ -20,9 +23,12 @@ export default function GeneratedContentDisplay({ isContentFromHistory, socialMe
     try {
       await copyToClipboard(text);
       setCopiedText(text);
+      toast.success("Content copied successfully")
       setTimeout(() => setCopiedText(null), 2000);
     } catch(error) {
-      console.log(error)
+      assertIsError(error);
+      console.log(error.message);
+      toast.error("Couldn't copy content");
     }
   }
 
@@ -54,9 +60,16 @@ export default function GeneratedContentDisplay({ isContentFromHistory, socialMe
         </div>
       ) : (
         <div className="bg-gray-700 p-4 rounded-xl">
-          <ReactMarkdown>
-            { generatedContent[0] }
-          </ReactMarkdown>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger className="text-left cursor-pointer" onClick={() => copy(generatedContent[0])}>
+                <ReactMarkdown>{ generatedContent[0] }</ReactMarkdown>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Click to copy</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       )}
     </div>
