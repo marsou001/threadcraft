@@ -66,7 +66,8 @@ export async function POST(req: Request) {
         }
 
         await createUser(id, email, name);
-        await sendMail(email, first_name!);
+        // TODO: send welcome email
+        // await sendMail(email, first_name!);
         console.log(`User ${id} created/updated successfully`);
       } catch (error) {
         console.error("Error creating/updating user:", error);
