@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     ],
     success_url: `${origin}/generate?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/pricing`,
-    client_reference_id: userId,
+    client_reference_id: String(userId),
   };
 
   if (customerId !== null) {

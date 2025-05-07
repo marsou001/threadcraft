@@ -8,7 +8,7 @@ export async function GET(req: Request) {
     return new Response("No user param was found in the request", { status: 400 });
   }
 
-  const points = await getUserPoints(user);
+  const points = await getUserPoints(Number(user));
   return Response.json({ points }, { status: 200 });
 }
 

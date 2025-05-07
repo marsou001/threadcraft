@@ -67,8 +67,6 @@ export default function GeneratePage({ history: userHistory, user, sessionPaymen
   const [isContentFromHistory, setIsContentFromHistory] = useState(false);
 
   const hiddenFileInputRef = useRef<HTMLInputElement>(null);
-  const userId = user.clerkId;
-
   const isSubmitButtonDisabled = isGenerating || commonSettings.prompt === "" || userPoints < pointsPerGeneration;
 
   function handleHistoryItemClick(item: GeneratedContent) {
@@ -136,7 +134,7 @@ export default function GeneratePage({ history: userHistory, user, sessionPaymen
     // Generate content
     let newlyGeneratedContent: GeneratedContent;
     try {
-      newlyGeneratedContent = await generateContent(userId!, settings);
+      newlyGeneratedContent = await generateContent(user.id, settings);
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -160,7 +158,7 @@ export default function GeneratePage({ history: userHistory, user, sessionPaymen
     const newUserPoints = userPoints - pointsPerGeneration;
 
     try {
-      await updateUserPoints(userId, newUserPoints);
+      await updateUserPoints(user.id, newUserPoints);
       setUserPoints(newUserPoints)
     } catch (error) {
       if (error instanceof Error) {

@@ -24,7 +24,7 @@ export async function getUserPoints(userId: string): Promise<number> {
   return data.points;
 }
 
-export async function updateUserPoints(userId: string, newPoints: number) {
+export async function updateUserPoints(userId: number, newPoints: number) {
   const response = await fetch("/api/users/points", {
     method: "PATCH",
     body: JSON.stringify({ userId, newPoints }),

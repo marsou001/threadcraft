@@ -27,7 +27,7 @@ export default async function Generate({
       sessionPaymentStatus = session.payment_status;
     }
     user = await getCurrentUser();
-    history = await getUserHistory(user.clerkId);
+    history = await getUserHistory(user.id);
   } catch(error) {
     assertIsError(error);
     return <ErrorComponent errorMessage={error.message} />

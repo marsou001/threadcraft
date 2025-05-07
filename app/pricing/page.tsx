@@ -42,7 +42,7 @@ export default async function PricingPage() {
   }
 
   try {
-    userSubscription = await getSubscription(user.clerkId);
+    userSubscription = await getSubscription(user.id);
     userPlan = userSubscription && getUserPlanFromPriceId(userSubscription.priceId);
   } catch(error) {
     assertIsError(error);

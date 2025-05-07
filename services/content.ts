@@ -12,7 +12,7 @@ export async function getHistory(userId: string): Promise<History> {
   return data.allGeneratedContent;
 }
 
-export async function generateContent(userId: string, settings: Settings): Promise<GeneratedContent> {
+export async function generateContent(userId: number, settings: Settings): Promise<GeneratedContent> {
   const response = await fetch("/api/content", {
     method: "POST",
     body: JSON.stringify({ userId, settings }),

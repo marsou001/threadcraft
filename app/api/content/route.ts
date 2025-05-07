@@ -6,13 +6,13 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function GET(req: Request) {
   const requestUrl = new URL(req.url);
-  const clerkUserId = requestUrl.searchParams.get("clerk_user");
+  const user_id = requestUrl.searchParams.get("user_id");
 
-  if (clerkUserId === null) {
-    return new Response("No Clerk user param was found in the request", { status: 400 });
+  if (user_id === null) {
+    return new Response("No user_id param was found in the request", { status: 400 });
   }
 
-  const allGeneratedContent = await getAllGeneratedContentForUser(clerkUserId);
+  const allGeneratedContent = await getAllGeneratedContentForUser(Number(user_id));
   return Response.json({ allGeneratedContent }, { status: 200 });
 }
 

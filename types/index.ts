@@ -22,7 +22,7 @@ export type EnterprisePlan = {
 export type Subscription = {
   id: number;
   subscriptionId: string;
-  userId: string;
+  user: number;
   priceId: string;
 }
 
@@ -39,7 +39,7 @@ export type User = {
 export type GeneratedContent = {
   id: number;
   content: string;
-  userId: string;
+  user: number;
   createdAt: Date;
 } & Settings;
 
@@ -84,12 +84,12 @@ export type SettingsAction = {
 
 export type CreateCheckoutSessionParams = {
   userHasCustomerId: true,
-  userId: string;
+  user: number;
   priceId: string;
   customerId: string;
 } | {
   userHasCustomerId: false,
-  userId: string;
+  user: number;
   priceId: string;
   customerEmail: string;
 }

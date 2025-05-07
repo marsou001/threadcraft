@@ -58,68 +58,68 @@ export async function getUserByStripeCustomerId(customerId: string) {
   return user;
 }
 
-export async function getUserPoints(userId: string) {
-  console.log("Fetching points for user", userId);
+export async function getUserPoints(id: number) {
+  console.log("Fetching points for user", id);
 
   const [user] = await db
     .select({ points: Users.points })
     .from(Users)
-    .where(eq(Users.clerkId, userId))
+    .where(eq(Users.id, id))
     .limit(1)
     .execute()
   return user.points;
 }
 
-export async function getUserSubscription(userId: string): Promise<Subscription | undefined> {
-  console.log("Fetching subscription for user", userId);
+export async function getUserSubscription(id: number): Promise<Subscription | undefined> {
+  console.log("Fetching subscription for user", id);
 
   const [subscription] = await db
     .select()
     .from(Subscriptions)
-    .where(eq(Subscriptions.userId, userId))
+    .where(eq(Subscriptions.user, id))
     .limit(1)
     .execute()
   return subscription;
 }
 
-export async function updateUser(userId: string, values: Partial<User>) {
-  console.log("Updating user", userId);
+export async function updateUser(id: number, values: Partial<User>) {
+  console.log("Updating user", id);
 
   const [user] = await db
     .update(Users)
     .set(values)
-    .where(eq(Users.clerkId, userId))
+    .where(eq(Users.id, id))
     .returning()
     .execute()
   return user;
 }
 
-export async function updateUserPoints(userId: string, newPoints: number) {
-  console.log("Updating points for user", userId);
+export async function updateUserPoints(id: number, newPoints: number) {
+  console.log("Updating points for user", id);
 
   const [user] = await db
     .update(Users)
     .set({ points: newPoints })
-    .where(eq(Users.clerkId, userId))
+    .where(eq(Users.id, id))
     .returning()
     .execute()
   return user.points;
 }
 
-export async function setStripeCustomerId(userId: string, stripeCustomerId: string) {
-  console.log("Setting Stripe customer id for user", userId);
+export async function setStripeCustomerId(id: number, stripeCustomerId: string) {
+  console.log("Setting Stripe customer id for user", id);
 
   const [user] = await db
     .update(Users)
     .set({ stripeCustomerId })
-    .where(eq(Users.clerkId, userId))
+    .where(eq(Users.id, id))
     .returning()
     .execute()
   return user;
 }
 
 export async function createSubscription(values: Omit<Subscription, "id">) {
-  console.log("Creating subscription for user", values.userId);
+  console.log("Creating subscription for user", values.user);
 
   const [newSubscription] = await db
     .insert(Subscriptions)
@@ -153,14 +153,14 @@ export async function deleteSubscription(subscriptionId: string) {
 }
 
 export async function saveGeneratedContent(
-  userId: string, generatedContent: string, settings: Settings
+  user: number, generatedContent: string, settings: Settings
 ): Promise<Content> {
-  console.log("Saving generated content for user", userId);
+  console.log("Saving generated content for user", user);
   const { socialMedia, tone, prompt, numberOfHashtags } = settings;
 
   const [content] = await db
     .insert(GeneratedContent)
-    .values({ userId, content: generatedContent, socialMedia, tone, prompt, numberOfHashtags })
+    .values({ user, content: generatedContent, socialMedia, tone, prompt, numberOfHashtags })
     .returning()
     .execute();
 
@@ -189,8 +189,8 @@ export async function saveGeneratedContent(
   }
 }
 
-export async function getAllGeneratedContentForUser(userId: string): Promise<History> {
-  console.log("Fetching content for user", userId);
+export async function getAllGeneratedContentForUser(id: number): Promise<History> {
+  console.log("Fetching content for user", id);
 
   const allGeneratedContent = await db
     .select()
@@ -198,7 +198,7 @@ export async function getAllGeneratedContentForUser(userId: string): Promise<His
     .leftJoin(XSettings, and(eq(GeneratedContent.id, XSettings.generatedContentId), eq(GeneratedContent.socialMedia, "X")))
     .leftJoin(InstagramSettings, and(eq(GeneratedContent.id, InstagramSettings.generatedContentId), eq(GeneratedContent.socialMedia, "Instagram")))
     .leftJoin(LinkedInSettings, and(eq(GeneratedContent.id, LinkedInSettings.generatedContentId), eq(GeneratedContent.socialMedia, "LinkedIn")))
-    .where(eq(GeneratedContent.userId, userId))
+    .where(eq(GeneratedContent.user, id))
     .orderBy(desc(GeneratedContent.createdAt))
     .execute();
 

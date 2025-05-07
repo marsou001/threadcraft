@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import { headers } from "next/headers";
 import { pricingPlans } from "@/data";
-import { createSubscription, deleteSubscription, getUserByClerkId, updateSubscription, updateUser } from "@/drizzle/db/actions";
+import { createSubscription, deleteSubscription, getUser, getUserByClerkId, updateSubscription, updateUser } from "@/drizzle/db/actions";
 import waitForUserByCustomerId from "@/lib/wait-for-user-by-customer-id";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -52,12 +52,12 @@ export async function POST(req: Request) {
         : checkout.customer.id;
 
       try {
-        const user = await getUserByClerkId(userId); // fetch from DB
+        const user = await getUser(Number(userId)); // fetch from DB
         if (user.stripeCustomerId !== null) {
           console.log("Customer already exists. Skipping update.");
         } else {
           // Only update if customerId is not already saved
-          await updateUser(userId, { stripeCustomerId });
+          await updateUser(Number(userId), { stripeCustomerId });
           console.log("Saved new stripeCustomerId");
         }
       } catch (error) {
@@ -72,10 +72,10 @@ export async function POST(req: Request) {
         ? subscription.customer
         : subscription.customer.id;
       const subscriptionId = subscription.id;
-      const { clerkId: userId } = await waitForUserByCustomerId(customerId);
+      const { id } = await waitForUserByCustomerId(customerId);
       const priceId = subscription.items.data[0].price.id;
       subscription.items.data[0].id
-      await createSubscription({ subscriptionId, userId, priceId })
+      await createSubscription({ subscriptionId, user: id, priceId })
       break;
     }
     case "customer.subscription.updated": {
@@ -101,7 +101,7 @@ export async function POST(req: Request) {
       const customerId = typeof invoice.customer === "string"
         ? invoice.customer
         : invoice.customer.id;
-      const user = await waitForUserByCustomerId(customerId);
+      const { id } = await waitForUserByCustomerId(customerId);
       const priceId = invoice.lines.data[invoice.lines.data.length - 1].pricing?.price_details?.price!;
       const plan = pricingPlans.find((plan) => plan.priceId === priceId);
       // Plan must not be Enterprise. Leave that to later
@@ -109,7 +109,7 @@ export async function POST(req: Request) {
         console.error("No plan found with price id", priceId);
         return new Response("No plan found", { status: 404 });
       }
-      await updateUser(user.clerkId, { points: plan.points });
+      await updateUser(id, { points: plan.points });
       break;
     }
     case "invoice.payment_failed": {
