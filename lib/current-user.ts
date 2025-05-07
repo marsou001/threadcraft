@@ -3,14 +3,9 @@ import type { User } from "@/types";
 import { getUserByClerkId } from "@/drizzle/db/actions";
 import assertIsError from "@/utils/assertIsError";
 
-export async function getCurrentUser(): Promise<User>;
-export async function getCurrentUser(redirectIfNotAuthenticated: false): Promise<User | null>;
-
-export async function getCurrentUser(redirectIfNotAuthenticated: boolean = true) {
+export async function getCurrentUser() {
   const { userId, redirectToSignIn } = await auth();
-  if (userId === null) {
-    return redirectIfNotAuthenticated ? redirectToSignIn() : null;
-  }
+  if (userId === null) return redirectToSignIn();
   
   let user: User;
   try {

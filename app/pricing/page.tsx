@@ -8,6 +8,7 @@ import type { Plan, Subscription, User } from "@/types";
 import assertIsError from "@/utils/assertIsError";
 import ErrorComponent from "@/components/ErrorComponent";
 import PricingPlanForNonAuthenticated from "@/components/PricingPlanForNonAuthenticated";
+import { auth } from "@clerk/nextjs/server";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -16,17 +17,8 @@ export const metadata: Metadata = {
 };
 
 export default async function PricingPage() {
-  let user: User | null, userSubscription: Subscription | undefined, userPlan: Plan | undefined;
-
-  try {
-    user = await getCurrentUser(false);
-  } catch(error) {
-    assertIsError(error);
-    return <ErrorComponent errorMessage={error.message} />
-  }
-
-  // if user is not authenticated
-  if (user === null) {
+  const { userId } = await auth();
+  if (userId === null) {
     return (
       <div className="container bg-black mx-auto py-20">
         <h1 className="text-white text-5xl font-bold tracking-wide text-center mb-12">
@@ -41,7 +33,10 @@ export default async function PricingPage() {
     )
   }
 
+  let user: User, userSubscription: Subscription | undefined, userPlan: Plan | undefined;
+
   try {
+    user = await getCurrentUser();
     userSubscription = await getSubscription(user.id);
     userPlan = userSubscription && getUserPlanFromPriceId(userSubscription.priceId);
   } catch(error) {
