@@ -84,12 +84,12 @@ export type SettingsAction = {
 
 export type CreateCheckoutSessionParams = {
   userHasCustomerId: true,
-  user: number;
+  userId: number;
   priceId: string;
   customerId: string;
 } | {
   userHasCustomerId: false,
-  user: number;
+  userId: number;
   priceId: string;
   customerEmail: string;
 }
