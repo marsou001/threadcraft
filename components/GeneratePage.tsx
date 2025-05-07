@@ -135,6 +135,7 @@ export default function GeneratePage({ history: userHistory, user, sessionPaymen
     let newlyGeneratedContent: GeneratedContent;
     try {
       newlyGeneratedContent = await generateContent(user.id, settings);
+      toast.success(socialMedia + " content generated successfully");
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
