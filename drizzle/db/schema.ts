@@ -37,6 +37,7 @@ export const GeneratedContent = pgTable("generated_content", {
 });
 
 export const XSettings = pgTable("x_settings", {
+  id: serial("id").primaryKey(),
   generatedContentId: serial("generated_content")
     .references(() => GeneratedContent.id)
     .notNull(),
@@ -45,6 +46,7 @@ export const XSettings = pgTable("x_settings", {
 });
 
 export const InstagramSettings = pgTable("instagram_settings", {
+  id: serial("id").primaryKey(),
   generatedContentId: serial("generated_content")
     .references(() => GeneratedContent.id)
     .notNull(),
@@ -52,6 +54,7 @@ export const InstagramSettings = pgTable("instagram_settings", {
 });
 
 export const LinkedInSettings = pgTable("linkedin_settings", {
+  id: serial("id").primaryKey(),
   generatedContentId: serial("generated_content")
     .references(() => GeneratedContent.id)
     .notNull(),
