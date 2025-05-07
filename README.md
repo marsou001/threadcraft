@@ -4,6 +4,12 @@
 
 ---
 
+## 📸 Screenshots
+
+![Preview main page](/public/threadly.png)
+
+---
+
 ## 🚀 Features
 
 - 💻 **Modern, Responsive UI**: Built with TailwindCSS for a fast and clean user experience.
@@ -31,12 +37,6 @@
 
 ---
 
-## 📸 Screenshots
-
-<!-- Add screenshots or a demo GIF here -->
-
----
-
 ## 📦 Getting Started
 
 1. **Clone the repo**  
@@ -51,6 +51,7 @@
    ```
 
 3. **Set environment variables**
+
    Create a `.env.local` file based on `.env.example` and add your API keys, Stripe credentials, database URL, and Clerk settings.
 
 4. **Run locally**
