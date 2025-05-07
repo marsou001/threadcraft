@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Actions from "./Actions";
+import Actions from "../Actions";
 
 export default function InstagramMock({ content, image }: { content: string, image: File | null }) {
   const objectURL = image === null ? "" : URL.createObjectURL(image);
