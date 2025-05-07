@@ -3,19 +3,16 @@ import type { User } from "@/types";
 import { getUserByClerkId } from "@/drizzle/db/actions";
 import assertIsError from "@/utils/assertIsError";
 
-let user: User | null = null;
-
 export async function getCurrentUser(): Promise<User>;
 export async function getCurrentUser(redirectIfNotAuthenticated: false): Promise<User | null>;
 
 export async function getCurrentUser(redirectIfNotAuthenticated: boolean = true) {
-  if (user !== null) return user;
-
   const { userId, redirectToSignIn } = await auth();
   if (userId === null) {
     return redirectIfNotAuthenticated ? redirectToSignIn() : null;
   }
   
+  let user: User;
   try {
     user = await getUserByClerkId(userId);
   } catch (error) {
