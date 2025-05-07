@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ✨ Introducing Threadly – AI Social Media Content Generator
 
-## Getting Started
+**Threadly** is a sleek, AI-powered web application for creating engaging social media content—tailored for platforms like **LinkedIn**, **Twitter**, and **Instagram**. Perfect for creators, marketers, and business professionals looking to scale their content effortlessly.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 💻 **Modern, Responsive UI**: Built with TailwindCSS for a fast and clean user experience.
+- 🤖 **AI-Powered Content Generation**: Generate posts tailored to the selected platform with adjustable tone and hashtags.
+- 🧵 **Twitter Thread Control**: Specify number of tweets per thread and characters per tweet.
+- 🖼️ **Instagram Content**: Generate posts directly or upload an image—Threadly will analyze it and craft relevant captions.
+- 🕓 **View History**: Access and manage previously generated posts.
+- 📋 **Copy & Preview**: Easily copy generated content and preview how it will appear on its respective platform.
+- 💳 **Multi-Tiered Subscriptions**:
+  - Earn points for content generation.
+  - Upgrade, downgrade, or cancel your plan anytime.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Tech Stack
 
-## Learn More
+| Tech            | Usage                                  |
+|-----------------|----------------------------------------|
+| **Next.js**     | Server-side rendering, SEO             |
+| **TailwindCSS** | Responsive, modern UI design           |
+| **Clerk**       | Authentication                         |
+| **Drizzle ORM** | Type-safe database access              |
+| **Neon + PostgreSQL** | Serverless database backend      |
+| **Stripe**      | Payments & subscription management     |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📸 Screenshots
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+<!-- Add screenshots or a demo GIF here -->
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📦 Getting Started
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Clone the repo**  
+   ```bash
+   git clone https://github.com/marsou001/threadlyai
+   cd threadlyai
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Set environment variables**
+   Create a `.env.local` file based on `.env.example` and add your API keys, Stripe credentials, database URL, and Clerk settings.
+
+4. **Run locally**
+
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 🧠 Coming Soon
+
+* 📅 Content scheduling
+* 🌐 Multi-language support
+* 🧵 Enhanced thread logic for X (Twitter)
+* 👥 Team collaboration features
+
+---
+
+## 📝 License
+
+MIT License
+
+---
+
+## 🙌 Acknowledgments
+
+* [OpenAI](https://openai.com/)
+* [Clerk](https://clerk.dev/)
+* [Stripe](https://stripe.com/)
+* [Neon](https://neon.tech/)
+* [Drizzle ORM](https://orm.drizzle.team/)
+
+---
+
+## 📫 Contact
+
+For feedback or collaboration inquiries, feel free to reach out via [LinkedIn](https://www.linkedin.com/in/marouane-souda).
+
