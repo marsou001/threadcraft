@@ -19,6 +19,7 @@ import GeneratedContentPreview from "./GeneratedContentPreview";
 import { updateUserPoints } from "@/services/users";
 import { toast } from "sonner";
 import Stripe from "stripe";
+import assertIsError from "@/utils/assertIsError";
 
 const contentTypes: ContentType[] = [
   { socialMedia: "X", label: "Twitter Thread" },
@@ -122,11 +123,9 @@ export default function GeneratePage({ history: userHistory, user, sessionPaymen
         try {
           imagePrompt = await imageToDataURL(image);
         } catch (error) {
-          if (error instanceof Error) {
-            toast.error(error.message);
-          }
-          setIsGenerating(false);
-          return;
+          assertIsError(error);
+          toast.error(error.message);
+          return setIsGenerating(false);
         }
       }
       settings.imagePrompt = imagePrompt;
@@ -137,11 +136,9 @@ export default function GeneratePage({ history: userHistory, user, sessionPaymen
       newlyGeneratedContent = await generateContent(user.id, settings);
       toast.success(socialMedia + " content generated successfully");
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      }
-      setIsGenerating(false);
-      return;
+      assertIsError(error);
+      toast.error(error.message);
+      return setIsGenerating(false);
     }
 
     if (socialMedia === "X") {
@@ -162,9 +159,8 @@ export default function GeneratePage({ history: userHistory, user, sessionPaymen
       await updateUserPoints(user.id, newUserPoints);
       setUserPoints(newUserPoints)
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      }
+      assertIsError(error);
+      toast.error(error.message);
     }
   }
 
