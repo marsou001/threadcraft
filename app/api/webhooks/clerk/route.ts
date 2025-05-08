@@ -5,6 +5,7 @@ import { createUser, deleteAllGeneratedContentForUser, deleteUser, getUserByCler
 import sendMail from '@/utils/sendMail'
 import assertIsError from '@/utils/assertIsError'
 import Stripe from 'stripe'
+import { User } from '@/types'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -74,10 +75,24 @@ export async function POST(req: Request) {
       const { id, email_addresses, first_name, last_name } = evt.data;
       const email = email_addresses[0]?.email_address;
       const name = `${first_name} ${last_name}`;
+      let user: User;
       
-      const user = await getUserByClerkId(id);
+      try {
+        user = await getUserByClerkId(id);
+      } catch(error) {
+        assertIsError(error);
+        console.log(`Error fetching user with clerk id ${id} __ ${error.message}`);
+        return new Response(`Something went wrong while fetching user with clerk id ${id}`, { status: 500 });
+      }
+
       if (user.email !== email || user.name !== name) {
-        await updateUser(user.id, { name, email });
+        try {
+          await updateUser(user.id, { name, email });
+        } catch(error) {
+          assertIsError(error);
+          console.log(`Error updating user ${user.id} with clerk id ${user.clerkId} __ ${error.message}`);
+          return new Response(`Something went wrong while updating user ${user.id}`, { status: 500 });
+        }
         return new Response(`User ${id} updated successfully`, { status: 201 });
       }
       break;
