@@ -1,8 +1,12 @@
 import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
-import { createUser, deleteGeneratedContentForUser, deleteSubscription, getUserByClerkId, updateUser } from '@/drizzle/db/actions'
+import { createUser, deleteAllGeneratedContentForUser, deleteUser, getUserByClerkId, getUserSubscription, updateUser } from '@/drizzle/db/actions'
 import sendMail from '@/utils/sendMail'
+import assertIsError from '@/utils/assertIsError'
+import Stripe from 'stripe'
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET
@@ -60,7 +64,8 @@ export async function POST(req: Request) {
         // await sendMail(email, first_name!);
         console.log(`User ${id} created/updated successfully`);
       } catch (error) {
-        console.error("Error creating/updating user:", error);
+        assertIsError(error)
+        console.error("Error creating/updating user:", error.message);
         return new Response("Error creating user " + id, { status: 500 });
       }
       return new Response(`User ${id} created successfully`, { status: 201 });
@@ -76,6 +81,29 @@ export async function POST(req: Request) {
         return new Response(`User ${id} updated successfully`, { status: 201 });
       }
       break;
+    }
+    case "user.deleted": {
+      const { id } = evt.data;
+      if (id === undefined) {
+        console.log("User id not defined while deleting");
+        return new Response("Something went wrong while deleting user", { status: 502 });
+      }
+      try {
+        const user = await getUserByClerkId(id);
+        await deleteAllGeneratedContentForUser(user.id);
+        if (user.stripeCustomerId !== null) {
+          const subscription = await getUserSubscription(user.id);
+          if (subscription !== undefined) {
+            await stripe.subscriptions.cancel(subscription.subscriptionId);
+          }
+        }
+        await deleteUser(user.id);
+      } catch (error) {
+        assertIsError(error);
+        console.error("Error while deleting user", id, error.message);
+        return new Response("Something went wrong while deleting user", { status: 502 });
+      }
+      return new Response(`User ${id} deleted successfully`, { status: 201 });
     }
   }
   return new Response('Webhook received', { status: 200 });

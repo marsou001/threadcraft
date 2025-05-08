@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import { headers } from "next/headers";
 import { pricingPlans } from "@/data";
-import { createSubscription, deleteSubscription, getUser, getUserByClerkId, updateSubscription, updateUser } from "@/drizzle/db/actions";
+import { createSubscription, deleteSubscription, getUser, updateSubscription, updateUser } from "@/drizzle/db/actions";
 import waitForUserByCustomerId from "@/lib/wait-for-user-by-customer-id";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
