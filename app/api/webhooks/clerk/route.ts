@@ -49,31 +49,22 @@ export async function POST(req: Request) {
 
   const eventType = evt.type
   switch (eventType) {
-    case "user.created":
+    case "user.created": {
       const { id, email_addresses, first_name, last_name } = evt.data;
       const email = email_addresses[0]?.email_address;
       const name = `${first_name} ${last_name}`;
 
       try {
-        // Check if user with the same email already exists
-        const usersWithSameEmail = await getUsersByEmail(email);
-        
-        if (usersWithSameEmail.length > 0) {
-          return new Response(
-            `User with the email ${email} already exists, please choose a different email address!`,
-            { status: 409 }
-          );
-        }
-
         await createUser(id, email, name);
         // TODO: send welcome email
         // await sendMail(email, first_name!);
         console.log(`User ${id} created/updated successfully`);
       } catch (error) {
         console.error("Error creating/updating user:", error);
-        return new Response("Error processing user data", { status: 500 });
+        return new Response("Error creating user " + id, { status: 500 });
       }
-    default:
-      return new Response('Webhook received', { status: 200 });
+      return new Response(`User ${id} created successfully`, { status: 201 });
+    }
   }
+  return new Response('Webhook received', { status: 200 });
 }
