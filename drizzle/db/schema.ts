@@ -1,5 +1,6 @@
 import { pgTable, serial, text, timestamp, varchar, pgEnum, smallint } from "drizzle-orm/pg-core";
 
+const priceIdEnum = pgEnum("price_id", [process.env.PRICE_ID_BASIC!, process.env.PRICE_ID_PRO!]);
 const socialMediaEnum = pgEnum("social_media", ["X", "Instagram", "LinkedIn"]);
 const toneEnum = pgEnum("tone", ["Casual", "Conversational", "Humorous", "Professional", "Empathetic", "Enthusiastic", "Authoritative", "Serious", "Neutral", "Joyful", "Friendly", "Encouraging"]);
 
@@ -20,7 +21,7 @@ export const Subscriptions = pgTable("subscriptions", {
     .references(() => Users.id)
     .notNull()
     .unique(),
-  priceId: varchar("price_id", { length: 100 }).notNull().unique(),
+  priceId: priceIdEnum("price_id").notNull(),
 })
 
 export const GeneratedContent = pgTable("generated_content", {
